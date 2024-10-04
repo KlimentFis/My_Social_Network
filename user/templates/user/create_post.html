@@ -14,6 +14,52 @@
       background-color: #1e1e1e;
       color: #fff;
     }
+    .drop-area {
+      border: 2px dashed #4a90e2;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      color: #ccc;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .drop-area:hover {
+      background-color: #2a2a2a;
+    }
+    .drop-area.dragging {
+      background-color: #3a3a3a;
+    }
+    .preview img {
+      max-width: 100%;
+      margin-top: 10px;
+    }
+    .image-container {
+      position: relative;
+      display: inline-block;
+      margin: 10px;
+    }
+    .image-container img {
+      max-width: 100px;
+      max-height: 100px;
+      border-radius: 5px;
+    }
+    .remove-btn {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background-color: #dc3545;
+      border: none;
+      color: white;
+      font-size: 12px;
+      width: 20px;
+      height: 20px;
+      padding: 0;
+      cursor: pointer;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   </style>
 </head>
 <body class="d-flex align-items-center justify-content-center vh-100">
@@ -30,10 +76,99 @@
             <label for="content" class="form-label">Content</label>
             <textarea class="form-control" id="content" rows="5" placeholder="Enter post content"></textarea>
           </div>
-          <button type="submit" class="btn btn-primary w-100">Post</button>
+
+          <!-- Area for uploading photos -->
+          <div class="mb-3">
+            <label for="image-upload" class="form-label">Attach Photos</label>
+            <div id="drop-area" class="drop-area">
+              Drag & Drop images here or click to upload
+              <input type="file" id="image-upload" class="form-control d-none" accept="image/*" multiple>
+            </div>
+            <div id="preview" class="preview"></div>
+          </div>
+
+          <button type="submit" class="btn btn-danger w-100">Post</button>
         </form>
       </div>
     </div>
   </div>
+
+  <script>
+    const dropArea = document.getElementById('drop-area');
+    const imageInput = document.getElementById('image-upload');
+    const preview = document.getElementById('preview');
+    let uploadedFiles = [];
+
+    // Prevent default behavior for drag events
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(event => {
+      dropArea.addEventListener(event, e => {
+        e.preventDefault();
+        e.stopPropagation();
+      });
+    });
+
+    // Change background color on drag over
+    ['dragenter', 'dragover'].forEach(event => {
+      dropArea.addEventListener(event, () => {
+        dropArea.classList.add('dragging');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(event => {
+      dropArea.addEventListener(event, () => {
+        dropArea.classList.remove('dragging');
+      });
+    });
+
+    // Handle drop event
+    dropArea.addEventListener('drop', (e) => {
+      const files = e.dataTransfer.files;
+      handleFiles(files);
+    });
+
+    // Handle click to upload
+    dropArea.addEventListener('click', () => {
+      imageInput.click();
+    });
+
+    imageInput.addEventListener('change', (e) => {
+      const files = e.target.files;
+      handleFiles(files);
+    });
+
+    // Function to handle files and show preview
+    function handleFiles(files) {
+      Array.from(files).forEach(file => {
+        if (file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onload = function(e) {
+            const imgContainer = document.createElement('div');
+            imgContainer.classList.add('image-container');
+
+            const img = document.createElement('img');
+            img.src = e.target.result;
+
+            const removeBtn = document.createElement('button');
+            removeBtn.classList.add('remove-btn');
+            removeBtn.innerText = 'X';
+            removeBtn.addEventListener('click', () => {
+              preview.removeChild(imgContainer);
+              const index = uploadedFiles.indexOf(file);
+              if (index > -1) {
+                uploadedFiles.splice(index, 1);  // Remove the file from the array
+              }
+            });
+
+            imgContainer.appendChild(img);
+            imgContainer.appendChild(removeBtn);
+            preview.appendChild(imgContainer);
+
+            uploadedFiles.push(file);  // Add the file to the array
+          };
+        }
+      });
+    }
+  </script>
 </body>
 </html>
