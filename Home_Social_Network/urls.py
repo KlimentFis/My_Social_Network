@@ -19,6 +19,7 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.urls import path, re_path
+from user.views import login_or_register
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -37,6 +38,7 @@ schema_view = get_schema_view(
 urlpatterns = [
    path('admin/', admin.site.urls),
    path('user/', include('user.urls')),
+   path("", login_or_register, name="login_or_register"),
 
    path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),  # OAuth2 URL
    path('swagger-docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),

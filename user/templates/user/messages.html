@@ -1,10 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ChatGPT Interface</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+{% extends 'base.html' %}
+
+{% block content %}
   <style>
     body {
       background-color: #121212;
@@ -145,42 +141,6 @@
       background-color: #666666;
     }
 
-    /* Верхний выезжающий сайдбар */
-    .top-sidebar {
-      position: fixed;
-      top: -60px; /* Скрытый сайдбар */
-      left: 0;
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      background-color: #333;
-      padding: 20px;
-      border-bottom: 1px solid #444;
-      transition: top 0.3s ease;
-      z-index: 1000;
-    }
-
-    .top-sidebar a {
-      color: #fff;
-      text-decoration: none;
-      margin: 0 15px;
-      font-weight: 600;
-    }
-
-    .top-sidebar a:hover {
-      color: #555555;
-    }
-
-    /* Невидимая область для наведения */
-    .hover-area {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 60px; /* Высота области соответствует скрытому навбару */
-      z-index: 999;
-    }
-
     /* Адаптивные стили */
     @media (max-width: 768px) {
       .message .message-text {
@@ -202,90 +162,42 @@
       }
     }
   </style>
-</head>
-<body>
-
-  <!-- Невидимая область для наведения -->
-  <div class="hover-area" id="hoverArea"></div>
-
-  <!-- Верхний выезжающий сайдбар -->
-  <div class="top-sidebar" id="topSidebar">
-    <a href="#home">Главная</a>
-    <a href="#about">Сообщения</a>
-    <a href="#services">Моя страница</a>
-    <a href="#contact">Друзья</a>
-  </div>
 
   <!-- Основной контейнер чата с боковой панелью чатов -->
-  <div class="container">
     <!-- Левая панель чатов -->
-    <div class="sidebar">
-      <h4>Chats</h4>
-      <div class="chat-list">
-        <div class="chat-item active">User 1</div>
-        <div class="chat-item">User 2</div>
-        <div class="chat-item">User 3</div>
-        <div class="chat-item">User 4</div>
-        <div class="chat-item">User 5</div>
-      </div>
-    </div>
-
-    <!-- Основной контент -->
-    <div class="main-content">
-      <div class="message-list">
-        <!-- Сообщение от пользователя 1 -->
-        <div class="message message-user1">
-          <div class="message-text">
-            <p>Hello, how are you?</p>
-          </div>
-        </div>
-
-        <!-- Сообщение от пользователя 2 -->
-        <div class="message message-user2">
-          <div class="message-text">
-            <p>I'm doing great, thanks for asking!</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Форма ввода сообщения -->
-      <div class="input-group">
-        <input type="text" class="form-control message-input" placeholder="Type a message...">
-        <button class="btn btn-primaty" type="button">Send</button>
-      </div>
+  <div class="sidebar">
+    <h4>Chats</h4>
+    <div class="chat-list">
+      <div class="chat-item active">User 1</div>
+      <div class="chat-item">User 2</div>
+      <div class="chat-item">User 3</div>
+      <div class="chat-item">User 4</div>
+      <div class="chat-item">User 5</div>
     </div>
   </div>
 
-  <script>
-    const topSidebar = document.getElementById('topSidebar');
-    const hoverArea = document.getElementById('hoverArea');
-    let hideTimeout;
+  <!-- Основной контент -->
+  <div class="main-content">
+    <div class="message-list">
+      <!-- Сообщение от пользователя 1 -->
+      <div class="message message-user1">
+        <div class="message-text">
+          <p>Hello, how are you?</p>
+        </div>
+      </div>
 
-    // Показываем сайдбар при наведении на область наведения
-    hoverArea.addEventListener('mouseenter', function() {
-      clearTimeout(hideTimeout); // Очищаем таймер скрытия
-      topSidebar.style.top = '0'; // Показать сайдбар
-    });
+      <!-- Сообщение от пользователя 2 -->
+      <div class="message message-user2">
+        <div class="message-text">
+          <p>I'm doing great, thanks for asking!</p>
+        </div>
+      </div>
+    </div>
 
-    // Скрываем сайдбар при уходе курсора с области наведения
-    hoverArea.addEventListener('mouseleave', function() {
-      hideTimeout = setTimeout(function() {
-        topSidebar.style.top = '-60px'; // Скрыть сайдбар через 0.5 сек
-      }, 500);
-    });
-
-    // Также скрываем сайдбар при уходе курсора с него
-    topSidebar.addEventListener('mouseleave', function() {
-      hideTimeout = setTimeout(function() {
-        topSidebar.style.top = '-60px'; // Скрыть сайдбар через 0.5 сек
-      }, 500);
-    });
-
-    // Останавливаем таймер скрытия, если пользователь вернулся в сайдбар
-    topSidebar.addEventListener('mouseenter', function() {
-      clearTimeout(hideTimeout); // Останавливаем таймер
-    });
-  </script>
-
-</body>
-</html>
+    <!-- Форма ввода сообщения -->
+    <div class="input-group">
+      <input type="text" class="form-control message-input" placeholder="Type a message...">
+      <button class="btn btn-primary" type="button">Send</button>
+    </div>
+  </div>
+{% endblock %}

@@ -51,124 +51,119 @@
       border: none;
       color: white;
       font-size: 12px;
-      width: 20px;
-      height: 20px;
-      padding: 0;
+      padding: 2px 5px;
       cursor: pointer;
       border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
   </style>
 </head>
-<body class="d-flex align-items-center justify-content-center vh-100">
-  <div class="container">
-    <div class="row">
-      <div class="col-md-6 mx-auto">
-        <h2 class="text-center">Create a Post</h2>
-        <form>
-          <div class="mb-3">
-            <label for="title" class="form-label">Post Title</label>
-            <input type="text" class="form-control" id="title" placeholder="Enter post title">
-          </div>
-          <div class="mb-3">
-            <label for="content" class="form-label">Content</label>
-            <textarea class="form-control" id="content" rows="5" placeholder="Enter post content"></textarea>
-          </div>
-
-          <!-- Area for uploading photos -->
-          <div class="mb-3">
-            <label for="image-upload" class="form-label">Attach Photos</label>
-            <div id="drop-area" class="drop-area">
-              Drag & Drop images here or click to upload
-              <input type="file" id="image-upload" class="form-control d-none" accept="image/*" multiple>
+  <body class="d-flex align-items-center justify-content-center vh-100">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6 mx-auto">
+          <h2 class="text-center">Create a Post</h2>
+          <form>
+            <div class="mb-3">
+              <label for="title" class="form-label">Post Title</label>
+              <input type="text" class="form-control" id="title" placeholder="Enter post title">
             </div>
-            <div id="preview" class="preview"></div>
-          </div>
+            <div class="mb-3">
+              <label for="content" class="form-label">Content</label>
+              <textarea class="form-control" id="content" rows="5" placeholder="Enter post content"></textarea>
+            </div>
 
-          <button type="submit" class="btn btn-danger w-100">Post</button>
-        </form>
+            <!-- Area for uploading photos -->
+            <div class="mb-3">
+              <label for="image-upload" class="form-label">Attach Photos</label>
+              <div id="drop-area" class="drop-area">
+                Drag & Drop images here or click to upload
+                <input type="file" id="image-upload" class="form-control d-none" accept="image/*" multiple>
+              </div>
+              <div id="preview" class="preview"></div>
+            </div>
+
+            <button type="submit" class="btn btn-danger w-100">Post</button>
+          </form>
+        </div>
       </div>
     </div>
-  </div>
 
-  <script>
-    const dropArea = document.getElementById('drop-area');
-    const imageInput = document.getElementById('image-upload');
-    const preview = document.getElementById('preview');
-    let uploadedFiles = [];
+    <script>
+      const dropArea = document.getElementById('drop-area');
+      const imageInput = document.getElementById('image-upload');
+      const preview = document.getElementById('preview');
+      let uploadedFiles = [];
 
-    // Prevent default behavior for drag events
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(event => {
-      dropArea.addEventListener(event, e => {
-        e.preventDefault();
-        e.stopPropagation();
+      // Prevent default behavior for drag events
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(event => {
+        dropArea.addEventListener(event, e => {
+          e.preventDefault();
+          e.stopPropagation();
+        });
       });
-    });
 
-    // Change background color on drag over
-    ['dragenter', 'dragover'].forEach(event => {
-      dropArea.addEventListener(event, () => {
-        dropArea.classList.add('dragging');
+      // Change background color on drag over
+      ['dragenter', 'dragover'].forEach(event => {
+        dropArea.addEventListener(event, () => {
+          dropArea.classList.add('dragging');
+        });
       });
-    });
 
-    ['dragleave', 'drop'].forEach(event => {
-      dropArea.addEventListener(event, () => {
-        dropArea.classList.remove('dragging');
+      ['dragleave', 'drop'].forEach(event => {
+        dropArea.addEventListener(event, () => {
+          dropArea.classList.remove('dragging');
+        });
       });
-    });
 
-    // Handle drop event
-    dropArea.addEventListener('drop', (e) => {
-      const files = e.dataTransfer.files;
-      handleFiles(files);
-    });
-
-    // Handle click to upload
-    dropArea.addEventListener('click', () => {
-      imageInput.click();
-    });
-
-    imageInput.addEventListener('change', (e) => {
-      const files = e.target.files;
-      handleFiles(files);
-    });
-
-    // Function to handle files and show preview
-    function handleFiles(files) {
-      Array.from(files).forEach(file => {
-        if (file.type.startsWith('image/')) {
-          const reader = new FileReader();
-          reader.readAsDataURL(file);
-          reader.onload = function(e) {
-            const imgContainer = document.createElement('div');
-            imgContainer.classList.add('image-container');
-
-            const img = document.createElement('img');
-            img.src = e.target.result;
-
-            const removeBtn = document.createElement('button');
-            removeBtn.classList.add('remove-btn');
-            removeBtn.innerText = 'X';
-            removeBtn.addEventListener('click', () => {
-              preview.removeChild(imgContainer);
-              const index = uploadedFiles.indexOf(file);
-              if (index > -1) {
-                uploadedFiles.splice(index, 1);  // Remove the file from the array
-              }
-            });
-
-            imgContainer.appendChild(img);
-            imgContainer.appendChild(removeBtn);
-            preview.appendChild(imgContainer);
-
-            uploadedFiles.push(file);  // Add the file to the array
-          };
-        }
+      // Handle drop event
+      dropArea.addEventListener('drop', (e) => {
+        const files = e.dataTransfer.files;
+        handleFiles(files);
       });
-    }
-  </script>
-</body>
+
+      // Handle click to upload
+      dropArea.addEventListener('click', () => {
+        imageInput.click();
+      });
+
+      imageInput.addEventListener('change', (e) => {
+        const files = e.target.files;
+        handleFiles(files);
+      });
+
+      // Function to handle files and show preview
+      function handleFiles(files) {
+        Array.from(files).forEach(file => {
+          if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function(e) {
+              const imgContainer = document.createElement('div');
+              imgContainer.classList.add('image-container');
+
+              const img = document.createElement('img');
+              img.src = e.target.result;
+
+              const removeBtn = document.createElement('button');
+              removeBtn.classList.add('remove-btn');
+              removeBtn.innerText = 'X';
+              removeBtn.addEventListener('click', () => {
+                preview.removeChild(imgContainer);
+                const index = uploadedFiles.indexOf(file);
+                if (index > -1) {
+                  uploadedFiles.splice(index, 1);  // Remove the file from the array
+                }
+              });
+
+              imgContainer.appendChild(img);
+              imgContainer.appendChild(removeBtn);
+              preview.appendChild(imgContainer);
+
+              uploadedFiles.push(file);  // Add the file to the array
+            };
+          }
+        });
+      }
+    </script>
+  </body>
 </html>
