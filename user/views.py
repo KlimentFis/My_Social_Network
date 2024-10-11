@@ -53,3 +53,6 @@ def user_logout(request):
 
 def news(request):
     return redirect(request, "user/news.html")
+
+def profile(request):
+    return render(request, "user/profile.html")
