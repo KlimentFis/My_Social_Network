@@ -10,15 +10,71 @@
       background-color: #121212;
       color: #fff;
     }
+
+    .container {
+      margin-top: 40px; /* Отступ сверху для навбара */
+    }
+
     .card {
       background-color: #1e1e1e;
     }
+
     .text-light {
       color: #fff !important;
     }
+
+    /* Верхний выезжающий сайдбар */
+    .top-sidebar {
+      position: fixed;
+      top: -60px; /* Скрытый сайдбар */
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      background-color: #333;
+      padding: 20px;
+      border-bottom: 1px solid #444;
+      transition: top 0.3s ease;
+      z-index: 1000;
+    }
+
+    .top-sidebar a {
+      color: #fff;
+      text-decoration: none;
+      margin: 0 15px;
+      font-weight: 600;
+    }
+
+    .top-sidebar a:hover {
+      color: red;
+    }
+
+    /* Невидимая область для наведения */
+    .hover-area {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 60px; /* Высота области соответствует скрытому навбару */
+      z-index: 999;
+    }
+
   </style>
 </head>
 <body>
+
+  <!-- Невидимая область для наведения -->
+  <div class="hover-area" id="hoverArea"></div>
+
+  <!-- Верхний выезжающий сайдбар -->
+  <div class="top-sidebar" id="topSidebar">
+    <a href="{% url 'news' %}">Главная</a>
+    <a href="{% url 'messages' %}">Сообщения</a>
+    <a href="{% url 'profile' %}">Моя страница</a>
+    <a href="{% url 'friends' %}">Друзья</a>
+    <a href="{% url 'user_logout' %}" style="color: red;">Выход</a>
+  </div>
+
   <div class="container mt-5">
     <div class="row">
       <div class="col-md-6 mx-auto">
@@ -34,5 +90,37 @@
       </div>
     </div>
   </div>
+
+  <script>
+    const topSidebar = document.getElementById('topSidebar');
+    const hoverArea = document.getElementById('hoverArea');
+    let hideTimeout;
+
+    // Показываем сайдбар при наведении на область наведения
+    hoverArea.addEventListener('mouseenter', function() {
+      clearTimeout(hideTimeout); // Очищаем таймер скрытия
+      topSidebar.style.top = '0'; // Показать сайдбар
+    });
+
+    // Скрываем сайдбар при уходе курсора с области наведения
+    hoverArea.addEventListener('mouseleave', function() {
+      hideTimeout = setTimeout(function() {
+        topSidebar.style.top = '-60px'; // Скрыть сайдбар через 0.5 сек
+      }, 500);
+    });
+
+    // Также скрываем сайдбар при уходе курсора с него
+    topSidebar.addEventListener('mouseleave', function() {
+      hideTimeout = setTimeout(function() {
+        topSidebar.style.top = '-60px'; // Скрыть сайдбар через 0.5 сек
+      }, 500);
+    });
+
+    // Останавливаем таймер скрытия, если пользователь вернулся в сайдбар
+    topSidebar.addEventListener('mouseenter', function() {
+      clearTimeout(hideTimeout); // Останавливаем таймер
+    });
+  </script>
+
 </body>
 </html>

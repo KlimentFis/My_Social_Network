@@ -94,10 +94,11 @@
 
   <!-- Верхний выезжающий сайдбар -->
   <div class="top-sidebar" id="topSidebar">
-    <a href="#home">Главная</a>
-    <a href="#about">Сообщения</a>
-    <a href="#services">Моя страница</a>
-    <a href="#contact">Друзья</a>
+    <a href="{% url 'news' %}">Главная</a>
+    <a href="{% url 'messages' %}">Сообщения</a>
+    <a href="{% url 'profile' %}">Моя страница</a>
+    <a href="{% url 'friends' %}">Друзья</a>
+    <a href="{% url 'user_logout' %}" style="color: red;">Выход</a>
   </div>
 
   <!-- Основной контейнер -->

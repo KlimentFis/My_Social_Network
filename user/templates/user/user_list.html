@@ -9,19 +9,64 @@
     body {
       background-color: #121212;
       color: #fff;
+      height: 100vh;
       margin: 0;
-      padding: 0;
+      display: flex;
+      flex-direction: column;
       font-family: Arial, sans-serif;
+      font-size: 16px;
     }
 
     .container {
-      margin-top: 50px;
+      display: flex;
+      height: 100%;
+      max-width: 1000px;
+      width: 100%;
+      margin: auto;
       background-color: #1e1e1e;
-      padding: 20px;
       border-radius: 8px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+      flex-direction: column; /* Добавляем колонную раскладку для контейнера */
     }
 
+    /* Верхний выезжающий сайдбар */
+    .top-sidebar {
+      position: fixed;
+      top: -60px; /* Скрытый сайдбар */
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      background-color: #333;
+      padding: 20px;
+      border-bottom: 1px solid #444;
+      transition: top 0.3s ease;
+      z-index: 1000;
+    }
+
+    .top-sidebar a {
+      color: #fff;
+      text-decoration: none;
+      margin: 0 15px;
+      font-weight: 600;
+    }
+
+    .top-sidebar a:hover {
+      color: red;
+    }
+
+    /* Невидимая область для наведения */
+    .hover-area {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 60px; /* Высота области соответствует скрытому навбару */
+      z-index: 999;
+    }
+
+    /* Стили для контактов */
     .contact-item {
       display: flex;
       justify-content: space-between;
@@ -32,7 +77,7 @@
       border-radius: 8px;
     }
 
-    .contact-item .contact-info {
+    .contact-info {
       display: flex;
       flex-direction: column;
     }
@@ -84,11 +129,27 @@
       outline: none;
       background-color: #333;
     }
+    .up {
+      padding-top: 60px; /* Отступ для верхнего сайдбара */
+    }
   </style>
 </head>
 <body>
 
-  <div class="container">
+  <!-- Невидимая область для наведения -->
+  <div class="hover-area" id="hoverArea"></div>
+
+  <!-- Верхний выезжающий сайдбар -->
+  <div class="top-sidebar" id="topSidebar">
+    <a href="{% url 'news' %}">Главная</a>
+    <a href="{% url 'messages' %}">Сообщения</a>
+    <a href="{% url 'profile' %}">Моя страница</a>
+    <a href="{% url 'friends' %}">Друзья</a>
+    <a href="{% url 'user_logout' %}" style="color: red;">Выход</a>
+  </div>
+
+  <!-- Основной контейнер -->
+  <div class="container up">
     <h2>Contacts</h2>
     <p>Select contacts to add as friends:</p>
 
@@ -101,7 +162,6 @@
       <div class="contact-item">
         <div class="contact-info">
           <span class="contact-name">John Doe</span>
-<!--          <span class="contact-email">johndoe@example.com</span>-->
         </div>
         <button class="btn-add" onclick="addFriend(this)">Add Friend</button>
       </div>
@@ -136,6 +196,35 @@
   </div>
 
   <script>
+    const topSidebar = document.getElementById('topSidebar');
+    const hoverArea = document.getElementById('hoverArea');
+    let hideTimeout;
+
+    // Показываем сайдбар при наведении на область наведения
+    hoverArea.addEventListener('mouseenter', function() {
+      clearTimeout(hideTimeout); // Очищаем таймер скрытия
+      topSidebar.style.top = '0'; // Показать сайдбар
+    });
+
+    // Скрываем сайдбар при уходе курсора с области наведения
+    hoverArea.addEventListener('mouseleave', function() {
+      hideTimeout = setTimeout(function() {
+        topSidebar.style.top = '-60px'; // Скрыть сайдбар через 0.5 сек
+      }, 500);
+    });
+
+    // Также скрываем сайдбар при уходе курсора с него
+    topSidebar.addEventListener('mouseleave', function() {
+      hideTimeout = setTimeout(function() {
+        topSidebar.style.top = '-60px'; // Скрыть сайдбар через 0.5 сек
+      }, 500);
+    });
+
+    // Останавливаем таймер скрытия, если пользователь вернулся в сайдбар
+    topSidebar.addEventListener('mouseenter', function() {
+      clearTimeout(hideTimeout); // Останавливаем таймер
+    });
+
     function addFriend(button) {
       // Изменяем текст и стиль кнопки после добавления в друзья
       button.textContent = 'Added';
@@ -152,7 +241,7 @@
       // Проходим по каждому контакту и проверяем, соответствует ли он запросу
       contactItems.forEach(item => {
         const name = item.querySelector('.contact-name').textContent.toLowerCase();
-        const email = item.querySelector('.contact-email').textContent.toLowerCase();
+        const email = item.querySelector('.contact-email') ? item.querySelector('.contact-email').textContent.toLowerCase() : '';
 
         if (name.includes(filter) || email.includes(filter)) {
           item.style.display = ''; // Показываем элемент
