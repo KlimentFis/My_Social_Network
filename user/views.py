@@ -80,9 +80,13 @@ def profile(request):
 def friends(request):
     if request.method == "GET":
         context = {
+            "friends": request.user.friends.all(),  # Исправлено: используем .all()
+            "subscribers": request.user.subscribers.all(),  # Используем .all() для подписчиков
+            "subscriptions": request.user.subscriptions.all(),  # Используем .all() для подписок
             "other_users": MyUser.objects.exclude(username=request.user.username)
         }
         return render(request, "user/user_list.html", context)
+
 
 
     elif request.method == "POST":

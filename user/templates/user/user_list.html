@@ -133,164 +133,58 @@
     <!-- Поле для поиска -->
     <input type="text" id="searchInput" onkeyup="filterContacts()" placeholder="Search for contacts...">
 
-    <div id="noResults">Ничего не найдено</div>
+    <h1 id="noResults">Ничего не найдено</h1>
+
 
     <h2 style="text-align: center;">Friends</h2>
-
-    <!-- Контейнер для списка контактов -->
     <div id="contactList">
-      <!-- Contact 1 -->
-      <div class="contact-item">
-        <div class="contact-info">
-          <span class="contact-name">John Doe</span>
+      {% if friends.count > 0 %}  <!-- Изменено: используем > 0 -->
+        {% for user in friends %}
+        <div class="contact-item">
+          <div class="contact-info">
+            <span class="contact-name">{{ user.username }}</span>
+          </div>
+          <button class="btn-add" onclick="addFriend(this)">Add Friend</button>
         </div>
-        <button class="btn-add" onclick="addFriend(this)">Add Friend</button>
-      </div>
-
-      <!-- Contact 2 -->
-      <div class="contact-item">
-        <div class="contact-info">
-          <span class="contact-name">Jane Smith</span>
-          <span class="contact-email">janesmith@example.com</span>
-        </div>
-        <button class="btn-add" onclick="addFriend(this)">Add Friend</button>
-      </div>
-
-      <!-- Contact 3 -->
-      <div class="contact-item">
-        <div class="contact-info">
-          <span class="contact-name">Alice Brown</span>
-          <span class="contact-email">alicebrown@example.com</span>
-        </div>
-        <button class="btn-add" onclick="addFriend(this)">Add Friend</button>
-      </div>
-
-      <!-- Contact 4 -->
-      <div class="contact-item">
-        <div class="contact-info">
-          <span class="contact-name">Bob Johnson</span>
-          <span class="contact-email">bobjohnson@example.com</span>
-        </div>
-        <button class="btn-add" onclick="addFriend(this)">Add Friend</button>
-      </div>
+        {% endfor %}
+<!--        <p>No friends found.</p>  &lt;!&ndash; Сообщение, если нет друзей &ndash;&gt;-->
+      {% endif %}
     </div>
+
 
     <h2 style="text-align: center;">Subscribers</h2>
     <div id="contactList">
-      <!-- Contact 1 -->
-      <div class="contact-item">
-        <div class="contact-info">
-          <span class="contact-name">John Doe</span>
+      {% if friends.count != 0 %}
+        {% for user in subscribers %}
+        <div class="contact-item">
+          <div class="contact-info">
+            <span class="contact-name">{{ user.username }}</span>
+          </div>
+          <button class="btn-add" onclick="addFriend(this)">Add Friend</button>
         </div>
-        <button class="btn-add" onclick="addFriend(this)">Add Friend</button>
-      </div>
-
-      <!-- Contact 2 -->
-      <div class="contact-item">
-        <div class="contact-info">
-          <span class="contact-name">Jane Smith</span>
-          <span class="contact-email">janesmith@example.com</span>
-        </div>
-        <button class="btn-add" onclick="addFriend(this)">Add Friend</button>
-      </div>
-
-      <!-- Contact 3 -->
-      <div class="contact-item">
-        <div class="contact-info">
-          <span class="contact-name">Alice Brown</span>
-          <span class="contact-email">alicebrown@example.com</span>
-        </div>
-        <button class="btn-add" onclick="addFriend(this)">Add Friend</button>
-      </div>
-
-      <!-- Contact 4 -->
-      <div class="contact-item">
-        <div class="contact-info">
-          <span class="contact-name">Bob Johnson</span>
-          <span class="contact-email">bobjohnson@example.com</span>
-        </div>
-        <button class="btn-add" onclick="addFriend(this)">Add Friend</button>
-      </div>
+        {% endfor %}
+      {% endif %}
     </div>
 
-    <h2 style="text-align: center;">I'm follow</h2>
-      <div id="contactList">
-      <!-- Contact 1 -->
+
+  <h2 style="text-align: center;">I'm follow</h2>
+  <div id="contactList">
+    {% if friends.count != 0 %}
+      {% for user in follow %}
       <div class="contact-item">
         <div class="contact-info">
-          <span class="contact-name">John Doe</span>
+          <span class="contact-name">{{ user.username }}</span>
         </div>
         <button class="btn-add" onclick="addFriend(this)">Add Friend</button>
       </div>
+      {% endfor %}
+    {% endif %}
+  </div>
 
-      <!-- Contact 2 -->
-      <div class="contact-item">
-        <div class="contact-info">
-          <span class="contact-name">Jane Smith</span>
-          <span class="contact-email">janesmith@example.com</span>
-        </div>
-        <button class="btn-add" onclick="addFriend(this)">Add Friend</button>
-      </div>
-
-      <!-- Contact 3 -->
-      <div class="contact-item">
-        <div class="contact-info">
-          <span class="contact-name">Alice Brown</span>
-          <span class="contact-email">alicebrown@example.com</span>
-        </div>
-        <button class="btn-add" onclick="addFriend(this)">Add Friend</button>
-      </div>
-
-      <!-- Contact 4 -->
-      <div class="contact-item">
-        <div class="contact-info">
-          <span class="contact-name">Bob Johnson</span>
-          <span class="contact-email">bobjohnson@example.com</span>
-        </div>
-        <button class="btn-add" onclick="addFriend(this)">Add Friend</button>
-      </div>
-    </div>
-
-    <h2 style="text-align: center;">Other users</h2>
-
-<!--    <div id="contactList">-->
-<!--      &lt;!&ndash; Contact 1 &ndash;&gt;-->
-<!--      <div class="contact-item">-->
-<!--        <div class="contact-info">-->
-<!--          <span class="contact-name">John Doe</span>-->
-<!--        </div>-->
-<!--        <button class="btn-add" onclick="addFriend(this)">Add Friend</button>-->
-<!--      </div>-->
-
-<!--      &lt;!&ndash; Contact 2 &ndash;&gt;-->
-<!--      <div class="contact-item">-->
-<!--        <div class="contact-info">-->
-<!--          <span class="contact-name">Jane Smith</span>-->
-<!--          <span class="contact-email">janesmith@example.com</span>-->
-<!--        </div>-->
-<!--        <button class="btn-add" onclick="addFriend(this)">Add Friend</button>-->
-<!--      </div>-->
-
-<!--      &lt;!&ndash; Contact 3 &ndash;&gt;-->
-<!--      <div class="contact-item">-->
-<!--        <div class="contact-info">-->
-<!--          <span class="contact-name">Alice Brown</span>-->
-<!--          <span class="contact-email">alicebrown@example.com</span>-->
-<!--        </div>-->
-<!--        <button class="btn-add" onclick="addFriend(this)">Add Friend</button>-->
-<!--      </div>-->
-
-<!--      &lt;!&ndash; Contact 4 &ndash;&gt;-->
-<!--      <div class="contact-item">-->
-<!--        <div class="contact-info">-->
-<!--          <span class="contact-name">Bob Johnson</span>-->
-<!--          <span class="contact-email">bobjohnson@example.com</span>-->
-<!--        </div>-->
-<!--        <button class="btn-add" onclick="addFriend(this)">Add Friend</button>-->
-<!--      </div>-->
-<!--    </div>-->
-    <div id="contactList">
-      <!-- Contact 1 -->
+  <h2 style="text-align: center;">Other users</h2>
+  <div id="contactList">
+    <!-- Contact 1 -->
+    {% if friends.count != 0 %}
       {% for user in other_users %}
       <div class="contact-item">
         <div class="contact-info">
@@ -299,7 +193,8 @@
         <button class="btn-add" onclick="addFriend(this)">Add Friend</button>
       </div>
       {% endfor %}
-    </div>
+    {% endif %}
+  </div>
   </div>
 
   <script>

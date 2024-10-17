@@ -5,8 +5,30 @@ from django.contrib.auth.models import AbstractUser
 # Create your models here.
 class MyUser(AbstractUser):
     image = models.ImageField(upload_to='users/', blank=True, null=True, verbose_name='Фото')
-    friends = models.ManyToManyField('self', blank=True, related_name='user_friends', symmetrical=False, verbose_name='Друзья')
-    subscribers = models.ManyToManyField('self', blank=True, related_name='user_subscribers', symmetrical=False, verbose_name='Подписчики')
+    friends = models.ManyToManyField(
+        'self',
+        blank=True,
+        related_name='user_friends',
+        symmetrical=True,  # Для друзей лучше оставить симметричные связи
+        verbose_name='Друзья'
+    )
+
+    subscribers = models.ManyToManyField(
+        'self',
+        blank=True,
+        related_name='user_subscribers',
+        symmetrical=False,  # Подписчики - асимметричные отношения
+        verbose_name='Подписчики'
+    )
+
+    subscriptions = models.ManyToManyField(
+        'self',
+        blank=True,
+        related_name='user_subscriptions',
+        symmetrical=False,  # Подписки - также асимметричные отношения
+        verbose_name='Подписки'
+    )
+    about_me = models.TextField('Обо мне', blank=True)
 
     def __str__(self):
         return f"{self.first_name} {self.username}"
