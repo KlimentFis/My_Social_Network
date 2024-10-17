@@ -2,8 +2,9 @@ from django.contrib.auth import login, logout, authenticate
 from django.utils import timezone
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_protect
-
 from .models import MyUser
+
+
 # Create your views here.
 def login_or_register(request):
     return render(request, "user/log_or_reg.html")
@@ -16,12 +17,16 @@ def register(request):
     if request.method == "GET":
         return render(request, "user/register.html")
     else:
-        username = request.POST.get('username', '').strip()
-        password = request.POST.get('password', '').strip()
-        repeat_password = request.POST.get('repeat_password', '').strip()
+        username = request.POST.get('username', '')
+        password = request.POST.get('password', '')
+        repeat_password = request.POST.get('repeat_password', '')
+
+        # Проверяем, существует ли уже пользователь с таким именем
+        if MyUser.objects.filter(username=username).exists():
+            return render(request, "user/register.html", {"error": "Username already taken"})
 
         if password == repeat_password:
-            # Создаем пользователя, но не передаем пароль напрямую
+            # Создаем пользователя с необходимыми полями
             user = MyUser(username=username, is_active=True, date_joined=timezone.now())
 
             # Хешируем пароль
@@ -35,6 +40,7 @@ def register(request):
 
             # Перенаправляем на страницу новостей
             return redirect('news')
+
         return render(request, "user/register.html", {"error": "Passwords do not match"})
 
 
@@ -73,6 +79,11 @@ def profile(request):
 
 def friends(request):
     if request.method == "GET":
-        return render(request, "user/user_list.html")
-    else:
-        ...
+        context = {
+            "other_users": MyUser.objects.exclude(username=request.user.username)
+        }
+        return render(request, "user/user_list.html", context)
+
+
+    elif request.method == "POST":
+        return render()

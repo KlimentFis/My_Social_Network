@@ -25,15 +25,15 @@
             {% csrf_token %}
             <div class="mb-3">
               <label for="username" class="form-label">Username</label>
-              <input type="text" class="form-control" id="username" placeholder="Enter username">
+              <input type="text" class="form-control" id="username" name="username" placeholder="Enter username">
             </div>
             <div class="mb-3">
               <label for="password" class="form-label">Password</label>
-              <input type="password" class="form-control" id="password" placeholder="Password">
+              <input type="password" class="form-control" id="password" name="password" placeholder="Password">
             </div>
             <div class="mb-3">
               <label for="repeat_password" class="form-label">Repeat password</label>
-              <input type="password" class="form-control" id="repeat_password" placeholder="Password">
+              <input type="password" class="form-control" id="repeat_password" name="repeat_password" placeholder="Password">
             </div>
             <button type="submit" class="btn btn-danger w-100">Register</button>
           </form>

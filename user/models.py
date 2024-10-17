@@ -6,6 +6,7 @@ from django.contrib.auth.models import AbstractUser
 class MyUser(AbstractUser):
     image = models.ImageField(upload_to='users/', blank=True, null=True, verbose_name='Фото')
     friends = models.ManyToManyField('self', blank=True, related_name='user_friends', symmetrical=False, verbose_name='Друзья')
+    subscribers = models.ManyToManyField('self', blank=True, related_name='user_subscribers', symmetrical=False, verbose_name='Подписчики')
 
     def __str__(self):
         return f"{self.first_name} {self.username}"
