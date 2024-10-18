@@ -9,8 +9,10 @@ from .models import MyUser
 def login_or_register(request):
     return render(request, "user/log_or_reg.html")
 
+
 def messages(request):
     return render(request, "user/messages.html")
+
 
 @csrf_protect
 def register(request):
@@ -63,31 +65,34 @@ def user_login(request):
             # Аутентификация не удалась — возвращаем ошибку
             return render(request, "user/login.html", {"error": "Invalid username or password"})
 
+
 def create_post(request):
     if request.method == "GET":
         return render(request, "user/create_post.html")
+
 
 def user_logout(request):
     logout(request)
     return redirect('login_or_register')
 
+
 def news(request):
     return render(request, "user/news.html")
+
 
 def profile(request):
     return render(request, "user/profile.html")
 
+
 def friends(request):
     if request.method == "GET":
         context = {
-            "friends": request.user.friends.all(),  # Исправлено: используем .all()
-            "subscribers": request.user.subscribers.all(),  # Используем .all() для подписчиков
-            "subscriptions": request.user.subscriptions.all(),  # Используем .all() для подписок
+            "friends": request.user.friends,
+            "subscribers": request.user.subscribers,
+            "subscriptions": request.user.subscriptions,
             "other_users": MyUser.objects.exclude(username=request.user.username)
         }
         return render(request, "user/user_list.html", context)
-
-
-
     elif request.method == "POST":
-        return render()
+        ...
+        # return render()

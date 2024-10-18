@@ -85,7 +85,7 @@
             <p>Friends: {{ request.user.friends.all.count }}</p>
             <p>Subscribers: {{ request.user.subscribers.all.count }}</p>
             <p>Subscriptions: {{ request.user.subscriptions.all.count }}</p>
-            <p>{% if request.user.about_me == "" %}About Me: {{ request.user.about_me }} {% endif %}</p>
+            <p>{% if not request.user.about_me == "" %}About Me: {{ request.user.about_me }}{% endif %}</p>
 <!--            <p>About Me: {{ request.user.about_me }}</p>-->
             <button class="btn btn-outline-light">Edit Profile</button>
           </div>

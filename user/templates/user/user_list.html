@@ -24,6 +24,7 @@
       border-radius: 8px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
       padding: 20px;
+      margin-top: 60px; /* Отступ для основного контента */
     }
 
     .top-sidebar {
@@ -32,6 +33,11 @@
       border-bottom: 1px solid #444;
       z-index: 1000;
       text-align: center;
+      position: absolute; /* Изменено на absolute */
+      top: -60px; /* Исходное положение скрыто */
+      left: 0;
+      right: 0;
+      transition: top 0.5s; /* Плавный переход */
     }
 
     .top-sidebar a {
@@ -43,6 +49,13 @@
 
     .top-sidebar a:hover {
       color: red;
+    }
+
+    .hover-area {
+      height: 60px; /* Высота навбара */
+      position: relative;
+      margin-top: -60px; /* Чтобы скрыть его под контентом */
+      z-index: 999; /* Чтобы был поверх контента */
     }
 
     .contact-item {
@@ -64,11 +77,6 @@
       font-size: 18px;
       font-weight: 600;
       color: #fff;
-    }
-
-    .contact-email {
-      font-size: 14px;
-      color: #aaa;
     }
 
     .btn-add {
@@ -119,7 +127,7 @@
 <body>
 
   <!-- Верхний сайдбар -->
-  <div class="top-sidebar">
+  <div class="top-sidebar" id="topSidebar">
     <a href="{% url 'news' %}">Главная</a>
     <a href="{% url 'messages' %}">Сообщения</a>
     <a href="{% url 'profile' %}">Моя страница</a>
@@ -135,69 +143,92 @@
 
     <h1 id="noResults">Ничего не найдено</h1>
 
+    <!-- Пустая область для наведения -->
+    <div class="hover-area" id="hoverArea"></div>
 
-    <h2 style="text-align: center;">Friends</h2>
-    <div id="contactList">
-      {% if friends.count > 0 %}  <!-- Изменено: используем > 0 -->
+    <!-- Friends -->
+    {% if friends.count > 0 %}
+      <h2 style="text-align: center;">Friends</h2>
+      <div id="contactList">
         {% for user in friends %}
-        <div class="contact-item">
-          <div class="contact-info">
-            <span class="contact-name">{{ user.username }}</span>
+          <div class="contact-item">
+            <div class="contact-info">
+              <span class="contact-name">{{ user.username }}</span>
+            </div>
+            <button class="btn-add" onclick="addFriend(this)">Add Friend</button>
           </div>
-          <button class="btn-add" onclick="addFriend(this)">Add Friend</button>
-        </div>
         {% endfor %}
-<!--        <p>No friends found.</p>  &lt;!&ndash; Сообщение, если нет друзей &ndash;&gt;-->
-      {% endif %}
-    </div>
+      </div>
+    {% endif %}
 
-
-    <h2 style="text-align: center;">Subscribers</h2>
-    <div id="contactList">
-      {% if friends.count != 0 %}
+    <!-- Subscribers -->
+    {% if subscribers.count > 0 %}
+      <h2 style="text-align: center;">Subscribers</h2>
+      <div id="contactList">
         {% for user in subscribers %}
+          <div class="contact-item">
+            <div class="contact-info">
+              <span class="contact-name">{{ user.username }}</span>
+            </div>
+            <button class="btn-add" onclick="addFriend(this)">Add Friend</button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- I'm follow -->
+    {% if subscriptions.count > 0 %}
+      <h2 style="text-align: center;">I'm follow</h2>
+      <div id="contactList">
+        {% for user in subscriptions %}
+          <div class="contact-item">
+            <div class="contact-info">
+              <span class="contact-name">{{ user.username }}</span>
+            </div>
+            <button class="btn-add" onclick="addFriend(this)">Add Friend</button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- Other users -->
+    <h2 style="text-align: center;">Other users</h2>
+    <div id="contactList">
+      {% for user in other_users %}
         <div class="contact-item">
           <div class="contact-info">
             <span class="contact-name">{{ user.username }}</span>
           </div>
           <button class="btn-add" onclick="addFriend(this)">Add Friend</button>
         </div>
-        {% endfor %}
-      {% endif %}
+      {% endfor %}
     </div>
 
-
-  <h2 style="text-align: center;">I'm follow</h2>
-  <div id="contactList">
-    {% if friends.count != 0 %}
-      {% for user in follow %}
-      <div class="contact-item">
-        <div class="contact-info">
-          <span class="contact-name">{{ user.username }}</span>
-        </div>
-        <button class="btn-add" onclick="addFriend(this)">Add Friend</button>
-      </div>
-      {% endfor %}
-    {% endif %}
-  </div>
-
-  <h2 style="text-align: center;">Other users</h2>
-  <div id="contactList">
-    <!-- Contact 1 -->
-    {% if friends.count != 0 %}
-      {% for user in other_users %}
-      <div class="contact-item">
-        <div class="contact-info">
-          <span class="contact-name">{{ user.username }}</span>
-        </div>
-        <button class="btn-add" onclick="addFriend(this)">Add Friend</button>
-      </div>
-      {% endfor %}
-    {% endif %}
-  </div>
   </div>
 
   <script>
+    const topSidebar = document.getElementById('topSidebar');
+    const hoverArea = document.getElementById('hoverArea');
+    let hideTimeout;
+
+    // Показываем сайдбар при наведении на область наведения
+    hoverArea.addEventListener('mouseenter', function() {
+      clearTimeout(hideTimeout); // Очищаем таймер скрытия
+      topSidebar.style.top = '0'; // Показать сайдбар
+    });
+
+    // Скрываем сайдбар при уходе курсора с области наведения
+    hoverArea.addEventListener('mouseleave', function() {
+      hideTimeout = setTimeout(function() {
+        topSidebar.style.top = '-60px'; // Скрыть сайдбар через 0.5 сек
+      }, 500);
+    });
+
+    // Останавливаем таймер скрытия, если пользователь вернулся в сайдбар
+    topSidebar.addEventListener('mouseenter', function() {
+      clearTimeout(hideTimeout); // Останавливаем таймер
+    });
+
     function filterContacts() {
       const input = document.getElementById('searchInput');
       const filter = input.value.toLowerCase();
@@ -234,6 +265,5 @@
       button.innerText = button.classList.contains('btn-added') ? 'Added' : 'Add Friend';
     }
   </script>
-
 </body>
 </html>

@@ -2,17 +2,15 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 
-# Create your models here.
 class MyUser(AbstractUser):
     image = models.ImageField(upload_to='users/', blank=True, null=True, verbose_name='Фото')
     friends = models.ManyToManyField(
         'self',
         blank=True,
         related_name='user_friends',
-        symmetrical=True,  # Для друзей лучше оставить симметричные связи
+        symmetrical=True,  # Друзья имеют симметричные связи
         verbose_name='Друзья'
     )
-
     subscribers = models.ManyToManyField(
         'self',
         blank=True,
@@ -20,12 +18,11 @@ class MyUser(AbstractUser):
         symmetrical=False,  # Подписчики - асимметричные отношения
         verbose_name='Подписчики'
     )
-
     subscriptions = models.ManyToManyField(
         'self',
         blank=True,
         related_name='user_subscriptions',
-        symmetrical=False,  # Подписки - также асимметричные отношения
+        symmetrical=False,  # Подписки также асимметричны
         verbose_name='Подписки'
     )
     about_me = models.TextField('Обо мне', blank=True)
