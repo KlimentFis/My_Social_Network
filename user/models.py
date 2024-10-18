@@ -22,7 +22,7 @@ class MyUser(AbstractUser):
         'self',
         blank=True,
         related_name='user_subscriptions',
-        symmetrical=False,  # Подписки также асимметричны
+        symmetrical=False,   # Подписки также асимметричны
         verbose_name='Подписки'
     )
     about_me = models.TextField('Обо мне', blank=True)

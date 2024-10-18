@@ -24,13 +24,12 @@
       border-radius: 8px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
       padding: 20px;
-      margin-top: 60px; /* Отступ для основного контента */
+      margin-top: 60px;
     }
 
-        /* Верхний выезжающий сайдбар */
     .top-sidebar {
       position: fixed;
-      top: -60px; /* Скрытый сайдбар */
+      top: -60px;
       left: 0;
       width: 100%;
       display: flex;
@@ -53,13 +52,12 @@
       color: red;
     }
 
-    /* Невидимая область для наведения */
     .hover-area {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
-      height: 60px; /* Высота области соответствует скрытому навбару */
+      height: 60px;
       z-index: 999;
     }
 
@@ -82,11 +80,6 @@
       font-size: 18px;
       font-weight: 600;
       color: #fff;
-    }
-
-    .contact-email {
-      font-size: 14px;
-      color: #aaa;
     }
 
     .btn-add {
@@ -136,10 +129,8 @@
 </head>
 <body>
 
-  <!-- Невидимая область для наведения -->
   <div class="hover-area" id="hoverArea"></div>
 
-  <!-- Верхний выезжающий сайдбар -->
   <div class="top-sidebar" id="topSidebar">
     <a href="{% url 'news' %}">Главная</a>
     <a href="{% url 'messages' %}">Сообщения</a>
@@ -148,10 +139,8 @@
     <a href="{% url 'user_logout' %}" style="color: red;">Выход</a>
   </div>
 
-  <!-- Основной контейнер -->
   <div class="container">
 
-    <!-- Поле для поиска -->
     <input type="text" id="searchInput" onkeyup="filterContacts()" placeholder="Search for contacts...">
 
     <h1 id="noResults">Ничего не найдено</h1>
@@ -159,13 +148,13 @@
     <!-- Friends -->
     {% if friends.count > 0 %}
       <h2 style="text-align: center;">Friends</h2>
-      <div id="contactList">
+      <div class="contactList">
         {% for user in friends %}
           <div class="contact-item">
             <div class="contact-info">
               <span class="contact-name">{{ user.username }}</span>
             </div>
-            <button class="btn-add" onclick="addFriend(this)">Add Friend</button>
+            <button class="btn-add" data-user-id="{{ user.id }}" onclick="addFriend(this)">Add Friend</button>
           </div>
         {% endfor %}
       </div>
@@ -174,13 +163,13 @@
     <!-- Subscribers -->
     {% if subscribers.count > 0 %}
       <h2 style="text-align: center;">Subscribers</h2>
-      <div id="contactList">
+      <div class="contactList">
         {% for user in subscribers %}
           <div class="contact-item">
             <div class="contact-info">
               <span class="contact-name">{{ user.username }}</span>
             </div>
-            <button class="btn-add" onclick="addFriend(this)">Add Friend</button>
+            <button class="btn-add" data-user-id="{{ user.id }}" onclick="addFriend(this)">Add Friend</button>
           </div>
         {% endfor %}
       </div>
@@ -189,61 +178,84 @@
     <!-- I'm follow -->
     {% if subscriptions.count > 0 %}
       <h2 style="text-align: center;">I'm follow</h2>
-      <div id="contactList">
+      <div class="contactList">
         {% for user in subscriptions %}
           <div class="contact-item">
             <div class="contact-info">
               <span class="contact-name">{{ user.username }}</span>
             </div>
-            <button class="btn-add" onclick="addFriend(this)">Add Friend</button>
+            <button class="btn-add" data-user-id="{{ user.id }}" onclick="addFriend(this)">Add Friend</button>
           </div>
         {% endfor %}
       </div>
     {% endif %}
 
     <!-- Other users -->
-    <h2 style="text-align: center;">Other users</h2>
-    <div id="contactList">
-      {% for user in other_users %}
-        <div class="contact-item">
-          <div class="contact-info">
-            <span class="contact-name">{{ user.username }}</span>
+    {% if other_users.count > 0 %}
+      <h2 style="text-align: center;">Other users</h2>
+      <div class="contactList">
+        {% for user in other_users %}
+          <div class="contact-item">
+            <div class="contact-info">
+              <span class="contact-name">{{ user.username }}</span>
+            </div>
+            <button class="btn-add" data-user-id="{{ user.id }}" onclick="addFriend(this)">Add Friend</button>
           </div>
-          <button class="btn-add" onclick="addFriend(this)">Add Friend</button>
-        </div>
-      {% endfor %}
-    </div>
+        {% endfor %}
+      </div>
+    {% endif %}
 
-  </div>
 
   <script>
+    function addFriend(button) {
+      const userId = button.getAttribute('data-user-id');
+
+      fetch('', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({
+          user_id: userId,
+          action: 'add_friend'  // Добавляем поле для указания действия
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === "success") {
+          button.textContent = "Added";
+          button.classList.add('btn-added');
+          button.disabled = true;
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    }
+
+
     const topSidebar = document.getElementById('topSidebar');
     const hoverArea = document.getElementById('hoverArea');
     let hideTimeout;
 
-    // Показываем сайдбар при наведении на область наведения
     hoverArea.addEventListener('mouseenter', function() {
-      clearTimeout(hideTimeout); // Очищаем таймер скрытия
-      topSidebar.style.top = '0'; // Показать сайдбар
+      clearTimeout(hideTimeout);
+      topSidebar.style.top = '0';
     });
 
-    // Скрываем сайдбар при уходе курсора с области наведения
     hoverArea.addEventListener('mouseleave', function() {
       hideTimeout = setTimeout(function() {
-        topSidebar.style.top = '-60px'; // Скрыть сайдбар через 0.5 сек
+        topSidebar.style.top = '-60px';
       }, 500);
     });
 
-    // Также скрываем сайдбар при уходе курсора с него
     topSidebar.addEventListener('mouseleave', function() {
       hideTimeout = setTimeout(function() {
-        topSidebar.style.top = '-60px'; // Скрыть сайдбар через 0.5 сек
+        topSidebar.style.top = '-60px';
       }, 500);
     });
 
-    // Останавливаем таймер скрытия, если пользователь вернулся в сайдбар
     topSidebar.addEventListener('mouseenter', function() {
-      clearTimeout(hideTimeout); // Останавливаем таймер
+      clearTimeout(hideTimeout);
     });
   </script>
 </body>

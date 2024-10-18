@@ -87,12 +87,38 @@ def profile(request):
 
 def friends(request):
     if request.method == "GET":
+        # Получаем списки друзей, подписчиков и подписок
+        friends = request.user.friends.all()
+        subscribers = request.user.subscribers.all()
+        subscriptions = request.user.subscriptions.all()
+
+        # Объединяем всех пользователей из этих категорий
+        related_users = friends | subscribers | subscriptions
+
+        # Получаем остальных пользователей, исключая тех, кто в связанных списках
+        other_users = MyUser.objects.exclude(id__in=related_users.values_list('id', flat=True)).exclude(username=request.user.username)
+
+        # Формируем контекст
         context = {
-            "friends": request.user.friends,
-            "subscribers": request.user.subscribers,
-            "subscriptions": request.user.subscriptions,
-            "other_users": MyUser.objects.exclude(username=request.user.username)
+            "friends": friends,
+            "subscribers": subscribers,
+            "subscriptions": subscriptions,
+            "other_users": other_users,
         }
         return render(request, "user/user_list.html", context)
+
     elif request.method == "POST":
-        ...
+        user_to_follow_id = request.POST.get('user_id')
+
+        try:
+            user_to_follow = MyUser.objects.get(id=user_to_follow_id)
+        except MyUser.DoesNotExist:
+            return JsonResponse({"status": "error", "message": "User not found"}, status=404)
+
+        action = request.POST.get('action')
+
+        if action == 'add_friend':
+            request.user.subscriptions.add(user_to_follow)
+            user_to_follow.subscribers.add(request.user)
+
+            return JsonResponse({"status": "success"})
