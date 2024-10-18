@@ -1,4 +1,5 @@
 from django.contrib.auth import login, logout, authenticate
+from django.http import JsonResponse
 from django.utils import timezone
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_protect
@@ -95,4 +96,3 @@ def friends(request):
         return render(request, "user/user_list.html", context)
     elif request.method == "POST":
         ...
-        # return render()

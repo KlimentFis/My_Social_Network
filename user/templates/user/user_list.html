@@ -27,17 +27,19 @@
       margin-top: 60px; /* Отступ для основного контента */
     }
 
+        /* Верхний выезжающий сайдбар */
     .top-sidebar {
+      position: fixed;
+      top: -60px; /* Скрытый сайдбар */
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: center;
       background-color: #333;
       padding: 20px;
       border-bottom: 1px solid #444;
+      transition: top 0.3s ease;
       z-index: 1000;
-      text-align: center;
-      position: absolute; /* Изменено на absolute */
-      top: -60px; /* Исходное положение скрыто */
-      left: 0;
-      right: 0;
-      transition: top 0.5s; /* Плавный переход */
     }
 
     .top-sidebar a {
@@ -51,11 +53,14 @@
       color: red;
     }
 
+    /* Невидимая область для наведения */
     .hover-area {
-      height: 60px; /* Высота навбара */
-      position: relative;
-      margin-top: -60px; /* Чтобы скрыть его под контентом */
-      z-index: 999; /* Чтобы был поверх контента */
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 60px; /* Высота области соответствует скрытому навбару */
+      z-index: 999;
     }
 
     .contact-item {
@@ -77,6 +82,11 @@
       font-size: 18px;
       font-weight: 600;
       color: #fff;
+    }
+
+    .contact-email {
+      font-size: 14px;
+      color: #aaa;
     }
 
     .btn-add {
@@ -126,7 +136,10 @@
 </head>
 <body>
 
-  <!-- Верхний сайдбар -->
+  <!-- Невидимая область для наведения -->
+  <div class="hover-area" id="hoverArea"></div>
+
+  <!-- Верхний выезжающий сайдбар -->
   <div class="top-sidebar" id="topSidebar">
     <a href="{% url 'news' %}">Главная</a>
     <a href="{% url 'messages' %}">Сообщения</a>
@@ -142,9 +155,6 @@
     <input type="text" id="searchInput" onkeyup="filterContacts()" placeholder="Search for contacts...">
 
     <h1 id="noResults">Ничего не найдено</h1>
-
-    <!-- Пустая область для наведения -->
-    <div class="hover-area" id="hoverArea"></div>
 
     <!-- Friends -->
     {% if friends.count > 0 %}
@@ -224,46 +234,17 @@
       }, 500);
     });
 
+    // Также скрываем сайдбар при уходе курсора с него
+    topSidebar.addEventListener('mouseleave', function() {
+      hideTimeout = setTimeout(function() {
+        topSidebar.style.top = '-60px'; // Скрыть сайдбар через 0.5 сек
+      }, 500);
+    });
+
     // Останавливаем таймер скрытия, если пользователь вернулся в сайдбар
     topSidebar.addEventListener('mouseenter', function() {
       clearTimeout(hideTimeout); // Останавливаем таймер
     });
-
-    function filterContacts() {
-      const input = document.getElementById('searchInput');
-      const filter = input.value.toLowerCase();
-      const contactLists = document.querySelectorAll('#contactList');
-      const noResults = document.getElementById('noResults');
-      let hasResults = false;
-
-      contactLists.forEach(list => {
-        const contacts = list.getElementsByClassName('contact-item');
-        let found = false;
-
-        for (let i = 0; i < contacts.length; i++) {
-          const name = contacts[i].getElementsByClassName('contact-name')[0];
-
-          if (name.innerText.toLowerCase().includes(filter)) {
-            contacts[i].style.display = '';
-            found = true;
-            hasResults = true;
-          } else {
-            contacts[i].style.display = 'none';
-          }
-        }
-
-        // Если не найдены контакты в данном списке, скрываем его
-        list.style.display = found ? '' : 'none';
-      });
-
-      // Показать или скрыть сообщение о результатах
-      noResults.style.display = hasResults ? 'none' : 'block';
-    }
-
-    function addFriend(button) {
-      button.classList.toggle('btn-added');
-      button.innerText = button.classList.contains('btn-added') ? 'Added' : 'Add Friend';
-    }
   </script>
 </body>
 </html>

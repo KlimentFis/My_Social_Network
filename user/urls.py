@@ -24,6 +24,5 @@ urlpatterns = [
     path("login", user_login, name="login"),
     path("create_post", create_post, name="create_post"),
     path("friends", friends, name="friends"),
-    # path("user_list"),
     path("logout", user_logout, name="user_logout")
 ]
