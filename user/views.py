@@ -1,4 +1,5 @@
 from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.utils import timezone
 from django.shortcuts import render, redirect
@@ -84,7 +85,7 @@ def news(request):
 def profile(request):
     return render(request, "user/profile.html")
 
-
+@login_required
 def friends(request):
     if request.method == "GET":
         # Получаем списки друзей, подписчиков и подписок
@@ -96,7 +97,8 @@ def friends(request):
         related_users = friends | subscribers | subscriptions
 
         # Получаем остальных пользователей, исключая тех, кто в связанных списках
-        other_users = MyUser.objects.exclude(id__in=related_users.values_list('id', flat=True)).exclude(username=request.user.username)
+        other_users = MyUser.objects.exclude(id__in=related_users.values_list('id', flat=True)).exclude(
+            username=request.user.username)
 
         # Формируем контекст
         context = {
@@ -108,17 +110,27 @@ def friends(request):
         return render(request, "user/user_list.html", context)
 
     elif request.method == "POST":
-        user_to_follow_id = request.POST.get('user_id')
+        user_id = request.POST.get('user_id')
 
         try:
-            user_to_follow = MyUser.objects.get(id=user_to_follow_id)
+            target_user = MyUser.objects.get(id=user_id)
         except MyUser.DoesNotExist:
             return JsonResponse({"status": "error", "message": "User not found"}, status=404)
 
         action = request.POST.get('action')
 
         if action == 'add_friend':
-            request.user.subscriptions.add(user_to_follow)
-            user_to_follow.subscribers.add(request.user)
-
+            request.user.subscriptions.add(target_user)
+            target_user.subscribers.add(request.user)
             return JsonResponse({"status": "success"})
+
+        elif action == 'remove_friend':
+            request.user.friends.remove(target_user)
+            target_user.subscribers.remove(request.user)
+            return JsonResponse({"status": "success"})
+
+        elif action == 'unfollow_user':
+            request.user.subscriptions.remove(target_user)
+            return JsonResponse({"status": "success"})
+
+        return JsonResponse({"status": "error", "message": "Invalid action"}, status=400)

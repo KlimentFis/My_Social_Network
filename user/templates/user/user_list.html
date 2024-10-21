@@ -104,6 +104,29 @@
       background-color: #28a745;
     }
 
+    .btn-remove, .btn-unfollow {
+      background-color: #dc3545;
+      border: none;
+      color: white;
+      padding: 8px 15px;
+      border-radius: 24px;
+      cursor: pointer;
+    }
+
+    .btn-unfollow {
+      background-color: red;
+      color: black;
+    }
+
+    .btn-unfollow:hover {
+      background-color: darkred;
+      color: black;
+    }
+
+    .btn-remove:hover {
+      background-color: #c82333;
+    }
+
     #searchInput {
       width: 100%;
       padding: 10px;
@@ -125,6 +148,43 @@
       text-align: center;
       margin-top: 20px;
     }
+
+    /* Верхний выезжающий сайдбар */
+    .top-sidebar {
+      position: fixed;
+      top: -60px; /* Скрытый сайдбар */
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      background-color: #333;
+      padding: 20px;
+      border-bottom: 1px solid #444;
+      transition: top 0.3s ease;
+      z-index: 1000;
+    }
+
+    .top-sidebar a {
+      color: #fff;
+      text-decoration: none;
+      margin: 0 15px;
+      font-weight: 600;
+    }
+
+    .top-sidebar a:hover {
+      color: red;
+    }
+
+    /* Невидимая область для наведения */
+    .hover-area {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 60px; /* Высота области соответствует скрытому навбару */
+      z-index: 999;
+    }
+
   </style>
 </head>
 <body>
@@ -154,7 +214,7 @@
             <div class="contact-info">
               <span class="contact-name">{{ user.username }}</span>
             </div>
-            <button class="btn-add" data-user-id="{{ user.id }}" onclick="addFriend(this)">Add Friend</button>
+            <button class="btn-remove" data-user-id="{{ user.id }}" onclick="removeFriend(this)">Remove Friend</button>
           </div>
         {% endfor %}
       </div>
@@ -177,14 +237,14 @@
 
     <!-- I'm follow -->
     {% if subscriptions.count > 0 %}
-      <h2 style="text-align: center;">I'm follow</h2>
+      <h2 style="text-align: center;">I'm following</h2>
       <div class="contactList">
         {% for user in subscriptions %}
           <div class="contact-item">
             <div class="contact-info">
               <span class="contact-name">{{ user.username }}</span>
             </div>
-            <button class="btn-add" data-user-id="{{ user.id }}" onclick="addFriend(this)">Add Friend</button>
+            <button class="btn-unfollow" data-user-id="{{ user.id }}" onclick="unfollowUser(this)">Unfollow</button>
           </div>
         {% endfor %}
       </div>
@@ -205,7 +265,6 @@
       </div>
     {% endif %}
 
-
   <script>
     function addFriend(button) {
       const userId = button.getAttribute('data-user-id');
@@ -218,7 +277,7 @@
         },
         body: JSON.stringify({
           user_id: userId,
-          action: 'add_friend'  // Добавляем поле для указания действия
+          action: 'add_friend'
         })
       })
       .then(response => response.json())
@@ -232,31 +291,82 @@
       .catch(error => console.error('Error:', error));
     }
 
+    function removeFriend(button) {
+      const userId = button.getAttribute('data-user-id');
+
+      fetch('', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({
+          user_id: userId,
+          action: 'remove_friend'
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === "success") {
+          button.closest('.contact-item').remove();
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    }
+
+    function unfollowUser(button) {
+      const userId = button.getAttribute('data-user-id');
+
+      fetch('', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({
+          user_id: userId,
+          action: 'unfollow_user'
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === "success") {
+          button.closest('.contact-item').remove();
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    }
 
     const topSidebar = document.getElementById('topSidebar');
     const hoverArea = document.getElementById('hoverArea');
     let hideTimeout;
 
+    // Показываем сайдбар при наведении на область наведения
     hoverArea.addEventListener('mouseenter', function() {
-      clearTimeout(hideTimeout);
-      topSidebar.style.top = '0';
+      clearTimeout(hideTimeout); // Очищаем таймер скрытия
+      topSidebar.style.top = '0'; // Показать сайдбар
     });
 
+    // Скрываем сайдбар при уходе курсора с области наведения
     hoverArea.addEventListener('mouseleave', function() {
       hideTimeout = setTimeout(function() {
-        topSidebar.style.top = '-60px';
+        topSidebar.style.top = '-60px'; // Скрыть сайдбар через 0.5 сек
       }, 500);
     });
 
+    // Также скрываем сайдбар при уходе курсора с него
     topSidebar.addEventListener('mouseleave', function() {
       hideTimeout = setTimeout(function() {
-        topSidebar.style.top = '-60px';
+        topSidebar.style.top = '-60px'; // Скрыть сайдбар через 0.5 сек
       }, 500);
     });
 
+    // Останавливаем таймер скрытия, если пользователь вернулся в сайдбар
     topSidebar.addEventListener('mouseenter', function() {
-      clearTimeout(hideTimeout);
+      clearTimeout(hideTimeout); // Останавливаем таймер
     });
   </script>
+
+  </div>
 </body>
 </html>
