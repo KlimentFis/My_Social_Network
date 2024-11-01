@@ -1,11 +1,9 @@
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
 from django.utils import timezone
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_protect
 from .models import MyUser
-
 
 # Create your views here.
 def login_or_register(request):
@@ -17,7 +15,7 @@ def messages(request):
 
 
 @csrf_protect
-def register(request):
+def user_register(request):
     if request.method == "GET":
         return render(request, "user/register.html")
     else:
@@ -38,7 +36,6 @@ def register(request):
 
             # Сохраняем пользователя
             user.save()
-
             # Логиним пользователя после регистрации
             login(request, user)
 
@@ -55,7 +52,6 @@ def user_login(request):
     if request.method == "POST":
         username = request.POST.get('username', '').strip()
         password = request.POST.get('password', '').strip()
-
         # Аутентифицируем пользователя
         user = authenticate(request, username=username, password=password)
 
@@ -85,22 +81,51 @@ def news(request):
 def profile(request):
     return render(request, "user/profile.html")
 
+
+from django.http import JsonResponse
+from django.views import View
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+import json
+
+
+# class FriendsView(View):
+#     def get(self, request):
+#         # Получаем текущего пользователя
+#         current_user = request.user
+#
+#         # Получаем пользователей в каждой из категорий
+#         friends = current_user.friends.all()  # Предполагается, что есть связь ManyToMany с друзьями
+#         subscribers = current_user.subscribers.all()
+#         subscriptions = current_user.subscriptions.all()
+#
+#         # Объединяем всех пользователей, которых нужно исключить
+#         excluded_users = list(friends) + list(subscribers) + list(subscriptions)
+#
+#         # Получаем других пользователей, исключая тех, кто уже в friends, subscribers или subscriptions
+#         other_users = MyUser.objects.exclude(id=current_user.id)\
+#             .exclude(id__in=[user.id for user in excluded_users])
+#
+#         # Передаем данные в шаблон
+#         context = {
+#             'friends': friends,
+#             'subscribers': subscribers,
+#             'subscriptions': subscriptions,
+#             'other_users': other_users,
+#         }
+#
+#         return render(request, 'friends.html', context)  # Убедитесь, что ваш шаблон называется 'friends.html'
+
 @login_required
 def friends(request):
     if request.method == "GET":
-        # Получаем списки друзей, подписчиков и подписок
-        friends = request.user.friends.all()
-        subscribers = request.user.subscribers.all()
-        subscriptions = request.user.subscriptions.all()
+        friends = list(request.user.friends.all())
+        subscribers = list(request.user.subscribers.all())
+        subscriptions = list(request.user.subscriptions.all())
+        related_users = list(set(friends + subscribers + subscriptions))
+        related_user_ids = [user.id for user in related_users]
+        other_users = MyUser.objects.exclude(id__in=related_user_ids).exclude(username=request.user.username)
 
-        # Объединяем всех пользователей из этих категорий
-        related_users = friends | subscribers | subscriptions
-
-        # Получаем остальных пользователей, исключая тех, кто в связанных списках
-        other_users = MyUser.objects.exclude(id__in=related_users.values_list('id', flat=True)).exclude(
-            username=request.user.username)
-
-        # Формируем контекст
         context = {
             "friends": friends,
             "subscribers": subscribers,
@@ -110,14 +135,16 @@ def friends(request):
         return render(request, "user/user_list.html", context)
 
     elif request.method == "POST":
-        user_id = request.POST.get('user_id')
+        import json
+        data = json.loads(request.body)  # Получение данных из JSON
+        user_id = data.get('user_id')
 
         try:
             target_user = MyUser.objects.get(id=user_id)
         except MyUser.DoesNotExist:
             return JsonResponse({"status": "error", "message": "User not found"}, status=404)
 
-        action = request.POST.get('action')
+        action = data.get('action')
 
         if action == 'add_friend':
             request.user.subscriptions.add(target_user)
