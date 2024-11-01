@@ -307,41 +307,31 @@
       topSidebar.style.top = '0';
     });
 
-    // Скрываем сайдбар при уходе мыши
+    // Прячем сайдбар при уходе мыши
     hoverArea.addEventListener('mouseleave', function() {
       hideTimeout = setTimeout(() => {
         topSidebar.style.top = '-60px';
-      }, 3000); // Скрыть через 3 секунды
+      }, 3000); // Устанавливаем задержку в 3 секунды
     });
 
+    // Фильтрация контактов
     function filterContacts() {
       const input = document.getElementById('searchInput');
       const filter = input.value.toLowerCase();
-      const contactLists = document.querySelectorAll('.contactList');
+      const contactItems = document.querySelectorAll('.contact-item');
+      let hasResults = false;
 
-      let noResults = true;
-
-      contactLists.forEach(list => {
-        const items = list.getElementsByClassName('contact-item');
-        let found = false;
-
-        for (let i = 0; i < items.length; i++) {
-          const name = items[i].getElementsByClassName('contact-name')[0].textContent;
-          if (name.toLowerCase().includes(filter)) {
-            items[i].style.display = '';
-            found = true;
-          } else {
-            items[i].style.display = 'none';
-          }
-        }
-
-        if (found) {
-          noResults = false;
+      contactItems.forEach(item => {
+        const contactName = item.querySelector('.contact-name').textContent.toLowerCase();
+        if (contactName.includes(filter)) {
+          item.style.display = "";
+          hasResults = true;
+        } else {
+          item.style.display = "none";
         }
       });
 
-      const noResultsMessage = document.getElementById('noResults');
-      noResultsMessage.style.display = noResults ? 'block' : 'none';
+      document.getElementById('noResults').style.display = hasResults ? 'none' : 'block';
     }
   </script>
 </body>

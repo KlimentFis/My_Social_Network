@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.urls import path
 from .views import messages, user_register, user_login, user_logout, news, profile, create_post, friends \
-# ,FriendsView
+    # ,FriendsView
 
 urlpatterns = [
     path("messages", messages, name="messages"),
@@ -24,7 +24,6 @@ urlpatterns = [
     path("register", user_register, name="register"),
     path("login", user_login, name="login"),
     path("create_post", create_post, name="create_post"),
-    # path("friends", FriendsView.as_view(), name="friends"),
     path("friends/", friends, name="friends"),
     path("logout", user_logout, name="user_logout")
 ]
