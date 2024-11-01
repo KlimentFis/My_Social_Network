@@ -123,59 +123,55 @@ def friends(request):
         user_id = data.get('user_id')
         action = data.get('action')
 
-        target_user = MyUser.objects.get(id=user_id)
+        try:
+            target_user = MyUser.objects.get(id=user_id)
+        except ObjectDoesNotExist:
+            return JsonResponse({"status": "error", "message": "User not found"}, status=404)
 
         if action == 'add_friend':
-            # Если target_user уже подписан на текущего пользователя
             if target_user in request.user.subscribers.all():
-                # Делаем их друзьями
+                # Если пользователь подписан на нас, добавляем его в друзья
                 request.user.friends.add(target_user)
                 target_user.friends.add(request.user)
 
-                # Удаляем их из подписчиков и подписок
+                # Удаляем друг друга из подписчиков и подписок
                 request.user.subscriptions.remove(target_user)
                 target_user.subscribers.remove(request.user)
             else:
-                # Если не подписан, просто добавляем в подписки
+                # Если нет взаимной подписки, добавляем его в подписки
                 request.user.subscriptions.add(target_user)
                 target_user.subscribers.add(request.user)
 
-                # Теперь, когда текущий пользователь подписывается на target_user,
-                # делаем их друзьями и удаляем из подписчиков
-                request.user.friends.add(target_user)
-                target_user.friends.add(request.user)
-                request.user.subscribers.remove(target_user)
-                target_user.subscribers.remove(request.user)
-
-            return JsonResponse({"status": "success"})  # Успешный ответ
+            return JsonResponse({"status": "success"})
 
         elif action == 'remove_friend':
             # Удаляем из друзей
             request.user.friends.remove(target_user)
             target_user.friends.remove(request.user)
 
-            # После удаления из друзей добавляем их обратно в подписчики
+            # После удаления из друзей добавляем обратно в подписчики
             request.user.subscribers.add(target_user)
             target_user.subscribers.add(request.user)
 
-            return JsonResponse({"status": "success"})  # Успешный ответ
+            return JsonResponse({"status": "success"})
 
         elif action == 'unfollow_user':
             # Удаляем из подписок
             request.user.subscriptions.remove(target_user)
             target_user.subscribers.remove(request.user)
 
-            return JsonResponse({"status": "success"})  # Успешный ответ
+            return JsonResponse({"status": "success"})
 
-    # Получаем все списки
+    # Получаем всех друзей пользователя
     friends = request.user.friends.all()
 
-    # Получаем подписчиков, исключая друзей
-    subscribers = request.user.subscribers.exclude(id__in=friends.values_list('id', flat=True))
+    # Получаем подписчиков, которые не являются друзьями и не находятся в подписках
+    subscribers = request.user.subscribers.exclude(id__in=friends.values_list('id', flat=True)).exclude(id__in=request.user.subscriptions.values_list('id', flat=True))
 
     # Получаем подписки, исключая друзей
     subscriptions = request.user.subscriptions.exclude(id__in=friends.values_list('id', flat=True))
 
+    # Исключаем друзей, подписчиков и подписки из общего списка пользователей
     excluded_user_ids = list(friends.values_list('id', flat=True)) + \
                         list(subscribers.values_list('id', flat=True)) + \
                         list(subscriptions.values_list('id', flat=True))
