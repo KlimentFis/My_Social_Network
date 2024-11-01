@@ -135,51 +135,40 @@ def friends(request):
                 # Удаляем их из подписчиков и подписок
                 request.user.subscriptions.remove(target_user)
                 target_user.subscribers.remove(request.user)
-
-                # Удаляем подписчика, так как они теперь друзья
-                request.user.subscribers.remove(target_user)
-                target_user.subscribers.remove(request.user)
-
             else:
                 # Если не подписан, просто добавляем в подписки
                 request.user.subscriptions.add(target_user)
                 target_user.subscribers.add(request.user)
 
-            # Обновляем списки
-            friends = list(request.user.friends.all())
-            subscribers = list(request.user.subscribers.all())
-            subscriptions = list(request.user.subscriptions.all())
-
-            return JsonResponse({
-                "status": "success",
-                "friends": [user.username for user in friends],
-                "subscribers": [user.username for user in subscribers],
-                "subscriptions": [user.username for user in subscriptions],
-            })
+            return JsonResponse({"status": "success"})  # Успешный ответ
 
         elif action == 'remove_friend':
             # Удаляем из друзей
             request.user.friends.remove(target_user)
             target_user.friends.remove(request.user)
-            return JsonResponse({"status": "success"})
+
+            # После удаления из друзей добавляем их обратно в подписчики
+            request.user.subscribers.add(target_user)
+            target_user.subscribers.add(request.user)
+
+            return JsonResponse({"status": "success"})  # Успешный ответ
 
         elif action == 'unfollow_user':
             # Удаляем из подписок
             request.user.subscriptions.remove(target_user)
             target_user.subscribers.remove(request.user)
-            return JsonResponse({"status": "success"})
+
+            return JsonResponse({"status": "success"})  # Успешный ответ
 
     # Получаем все списки
     friends = request.user.friends.all()
     subscribers = request.user.subscribers.all()
     subscriptions = request.user.subscriptions.all()
 
-    # Собираем ID всех пользователей, которых не нужно показывать в other_users
     excluded_user_ids = list(friends.values_list('id', flat=True)) + \
                         list(subscribers.values_list('id', flat=True)) + \
                         list(subscriptions.values_list('id', flat=True))
 
-    # Получаем других пользователей, исключая тех, кто уже в списках
     other_users = MyUser.objects.exclude(id__in=excluded_user_ids).exclude(id=request.user.id)
 
     context = {

@@ -167,7 +167,7 @@
     <!-- Friends -->
     {% if friends.count > 0 %}
       <h2 style="text-align: center;">Friends</h2>
-      <div class="contactList">
+      <div class="contactList" id="friendsList">
         {% for user in friends %}
           <div class="contact-item">
             <div class="contact-info">
@@ -182,7 +182,7 @@
     <!-- Subscribers -->
     {% if subscribers.count > 0 %}
       <h2 style="text-align: center;">Subscribers</h2>
-      <div class="contactList">
+      <div class="contactList" id="subscribersList">
         {% for user in subscribers %}
           <div class="contact-item">
             <div class="contact-info">
@@ -197,7 +197,7 @@
     <!-- I'm following -->
     {% if subscriptions.count > 0 %}
       <h2 style="text-align: center;">I'm following</h2>
-      <div class="contactList">
+      <div class="contactList" id="subscriptionsList">
         {% for user in subscriptions %}
           <div class="contact-item">
             <div class="contact-info">
@@ -212,7 +212,7 @@
     <!-- Other users -->
     {% if other_users.count > 0 %}
       <h2 style="text-align: center;">Other users</h2>
-      <div class="contactList">
+      <div class="contactList" id="otherUsersList">
         {% for user in other_users %}
           <div class="contact-item">
             <div class="contact-info">
@@ -226,113 +226,123 @@
   </div>
 
   <script>
-    function addFriend(button) {
-      const userId = button.getAttribute('data-user-id');
+    const hoverArea = document.getElementById('hoverArea');
+    const topSidebar = document.getElementById('topSidebar');
+    let hideTimeout;
 
-      fetch('', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': '{{ csrf_token }}'
-        },
-        body: JSON.stringify({
-          user_id: userId,
-          action: 'add_friend'
+    hoverArea.addEventListener('mouseenter', function() {
+        clearTimeout(hideTimeout);
+        topSidebar.style.top = '0'; // Показываем навбар
+    });
+
+    hoverArea.addEventListener('mouseleave', function() {
+        hideTimeout = setTimeout(function() {
+            topSidebar.style.top = '-60px'; // Скрываем навбар
+        }, 1000);
+    });
+
+    function addFriend(button) {
+        const userId = button.getAttribute('data-user-id');
+
+        fetch('', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                user_id: userId,
+                action: 'add_friend'
+            })
         })
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.status === "success") {
-          button.textContent = "Added";
-          button.classList.add('btn-added');
-          button.disabled = true;
-        }
-      })
-      .catch(error => console.error('Error:', error));
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                window.location.reload(); // Обновляем страницу
+            }
+        })
+        .catch(error => console.error('Error:', error));
     }
 
     function removeFriend(button) {
-      const userId = button.getAttribute('data-user-id');
+        const userId = button.getAttribute('data-user-id');
 
-      fetch('', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': '{{ csrf_token }}'
-        },
-        body: JSON.stringify({
-          user_id: userId,
-          action: 'remove_friend'
+        fetch('', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                user_id: userId,
+                action: 'remove_friend'
+            })
         })
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.status === "success") {
-          button.closest('.contact-item').remove();
-        }
-      })
-      .catch(error => console.error('Error:', error));
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                window.location.reload(); // Обновляем страницу
+            }
+        })
+        .catch(error => console.error('Error:', error));
     }
 
     function unfollowUser(button) {
-      const userId = button.getAttribute('data-user-id');
+        const userId = button.getAttribute('data-user-id');
 
-      fetch('', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': '{{ csrf_token }}'
-        },
-        body: JSON.stringify({
-          user_id: userId,
-          action: 'unfollow_user'
+        fetch('', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                user_id: userId,
+                action: 'unfollow_user'
+            })
         })
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.status === "success") {
-          button.closest('.contact-item').remove();
-        }
-      })
-      .catch(error => console.error('Error:', error));
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                window.location.reload(); // Обновляем страницу
+            }
+        })
+        .catch(error => console.error('Error:', error));
     }
 
-    const topSidebar = document.getElementById('topSidebar');
-    const hoverArea = document.getElementById('hoverArea');
-    let hideTimeout;
-
-    // Показываем сайдбар при наведении на область наведения
-    hoverArea.addEventListener('mouseenter', function() {
-      clearTimeout(hideTimeout);
-      topSidebar.style.top = '0';
-    });
-
-    // Прячем сайдбар при уходе мыши
-    hoverArea.addEventListener('mouseleave', function() {
-      hideTimeout = setTimeout(() => {
-        topSidebar.style.top = '-60px';
-      }, 3000); // Устанавливаем задержку в 3 секунды
-    });
-
-    // Фильтрация контактов
     function filterContacts() {
-      const input = document.getElementById('searchInput');
-      const filter = input.value.toLowerCase();
-      const contactItems = document.querySelectorAll('.contact-item');
-      let hasResults = false;
+        const input = document.getElementById('searchInput');
+        const filter = input.value.toLowerCase();
+        const contactGroups = document.querySelectorAll('.contactList'); // Получаем все группы контактов
+        let anyResults = false;
 
-      contactItems.forEach(item => {
-        const contactName = item.querySelector('.contact-name').textContent.toLowerCase();
-        if (contactName.includes(filter)) {
-          item.style.display = "";
-          hasResults = true;
-        } else {
-          item.style.display = "none";
-        }
-      });
+        contactGroups.forEach(group => {
+            const items = group.querySelectorAll('.contact-item');
+            let groupHasItems = false;
 
-      document.getElementById('noResults').style.display = hasResults ? 'none' : 'block';
+            items.forEach(item => {
+                const name = item.querySelector('.contact-name').textContent.toLowerCase();
+                if (name.includes(filter)) {
+                    item.style.display = ''; // Показываем элемент
+                    groupHasItems = true;
+                    anyResults = true;
+                } else {
+                    item.style.display = 'none'; // Скрываем элемент
+                }
+            });
+
+            // Скрываем заголовок группы, если нет элементов
+            const groupHeader = group.previousElementSibling; // Assuming <h2> is right before the contact list
+            groupHeader.style.display = groupHasItems ? '' : 'none';
+        });
+
+        // Скрываем все группы, если нет ни одного результата
+        const noResults = document.getElementById('noResults');
+        noResults.style.display = anyResults ? 'none' : 'block'; // Показываем/скрываем сообщение о результате
     }
+
+    // Обработка ввода в поле поиска
+    document.getElementById('searchInput').addEventListener('input', filterContacts);
   </script>
 </body>
 </html>
