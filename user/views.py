@@ -140,6 +140,13 @@ def friends(request):
                 request.user.subscriptions.add(target_user)
                 target_user.subscribers.add(request.user)
 
+                # Теперь, когда текущий пользователь подписывается на target_user,
+                # делаем их друзьями и удаляем из подписчиков
+                request.user.friends.add(target_user)
+                target_user.friends.add(request.user)
+                request.user.subscribers.remove(target_user)
+                target_user.subscribers.remove(request.user)
+
             return JsonResponse({"status": "success"})  # Успешный ответ
 
         elif action == 'remove_friend':
@@ -162,8 +169,12 @@ def friends(request):
 
     # Получаем все списки
     friends = request.user.friends.all()
-    subscribers = request.user.subscribers.all()
-    subscriptions = request.user.subscriptions.all()
+
+    # Получаем подписчиков, исключая друзей
+    subscribers = request.user.subscribers.exclude(id__in=friends.values_list('id', flat=True))
+
+    # Получаем подписки, исключая друзей
+    subscriptions = request.user.subscriptions.exclude(id__in=friends.values_list('id', flat=True))
 
     excluded_user_ids = list(friends.values_list('id', flat=True)) + \
                         list(subscribers.values_list('id', flat=True)) + \
