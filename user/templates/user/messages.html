@@ -172,11 +172,9 @@
   <div class="sidebar">
     <h4>Chats</h4>
     <div class="chat-list">
-      <div class="chat-item active">User 1</div>
-      <div class="chat-item">User 2</div>
-      <div class="chat-item">User 3</div>
-      <div class="chat-item">User 4</div>
-      <div class="chat-item">User 5</div>
+      {% for user in friends %}
+      <div class="chat-item active">{{ user.username }}</div>
+      {% endfor %}
     </div>
   </div>
 

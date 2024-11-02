@@ -4,6 +4,8 @@ from django.utils import timezone
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_protect
 from .models import MyUser
+from django.http import JsonResponse
+import json
 
 # Create your views here.
 def login_or_register(request):
@@ -11,7 +13,13 @@ def login_or_register(request):
 
 
 def messages(request):
-    return render(request, "user/messages.html")
+    # Получаем всех пользователей
+    all_users = set([request.user]) | set(request.user.friends.all()) | set(request.user.subscriptions.all()) | set(
+        request.user.subscribers.all())
+    for i in all_users:
+        if i == request.user:
+            i.username = "Избранное"
+    return render(request, "user/messages.html", {"friends": all_users})
 
 
 @csrf_protect
@@ -82,39 +90,6 @@ def profile(request):
     return render(request, "user/profile.html")
 
 
-from django.http import JsonResponse
-from django.views import View
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
-import json
-
-
-# class FriendsView(View):
-#     def get(self, request):
-#         # Получаем текущего пользователя
-#         current_user = request.user
-#
-#         # Получаем пользователей в каждой из категорий
-#         friends = current_user.friends.all()  # Предполагается, что есть связь ManyToMany с друзьями
-#         subscribers = current_user.subscribers.all()
-#         subscriptions = current_user.subscriptions.all()
-#
-#         # Объединяем всех пользователей, которых нужно исключить
-#         excluded_users = list(friends) + list(subscribers) + list(subscriptions)
-#
-#         # Получаем других пользователей, исключая тех, кто уже в friends, subscribers или subscriptions
-#         other_users = MyUser.objects.exclude(id=current_user.id)\
-#             .exclude(id__in=[user.id for user in excluded_users])
-#
-#         # Передаем данные в шаблон
-#         context = {
-#             'friends': friends,
-#             'subscribers': subscribers,
-#             'subscriptions': subscriptions,
-#             'other_users': other_users,
-#         }
-#
-#         return render(request, 'friends.html', context)  # Убедитесь, что ваш шаблон называется 'friends.html'
 
 @login_required
 def friends(request):
@@ -149,9 +124,13 @@ def friends(request):
             request.user.friends.remove(target_user)
             target_user.friends.remove(request.user)
 
-            # После удаления из друзей добавляем обратно в подписчики
+            # Добавляем обратно в подписчики
             request.user.subscribers.add(target_user)
             target_user.subscribers.add(request.user)
+
+            # Добавляем в подписки
+            request.user.subscriptions.add(target_user)
+            target_user.subscriptions.add(request.user)
 
             return JsonResponse({"status": "success"})
 
@@ -165,10 +144,10 @@ def friends(request):
     # Получаем всех друзей пользователя
     friends = request.user.friends.all()
 
-    # Получаем подписчиков, которые не являются друзьями и не находятся в подписках
-    subscribers = request.user.subscribers.exclude(id__in=friends.values_list('id', flat=True)).exclude(id__in=request.user.subscriptions.values_list('id', flat=True))
+    # Получаем подписчиков, которые не являются друзьями
+    subscribers = request.user.subscribers.exclude(id__in=friends.values_list('id', flat=True))
 
-    # Получаем подписки, исключая друзей
+    # Получаем подписки, которые не являются друзьями
     subscriptions = request.user.subscriptions.exclude(id__in=friends.values_list('id', flat=True))
 
     # Исключаем друзей, подписчиков и подписки из общего списка пользователей
