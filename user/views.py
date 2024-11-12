@@ -12,14 +12,43 @@ def login_or_register(request):
     return render(request, "user/log_or_reg.html")
 
 
+from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse
+from .models import Message
+from django.contrib.auth.models import User
+from django.views.decorators.csrf import csrf_exempt
+
+
 def messages(request):
-    # Получаем всех пользователей
+    # Получаем всех друзей пользователя
     all_users = set([request.user]) | set(request.user.friends.all()) | set(request.user.subscriptions.all()) | set(
         request.user.subscribers.all())
-    for i in all_users:
-        if i == request.user:
-            i.username = "Избранное"
+    for user in all_users:
+        if user == request.user:
+            user.username = "Избранное"
+
     return render(request, "user/messages.html", {"friends": all_users})
+
+
+def chat_id(request, pk):
+    messages = Message.objects.filter(recipient = pk) | Message.objects.filter(sender = pk)
+    return render(request, "user/message.html", {"messages": messages})
+
+@csrf_exempt
+def send_message(request, user_id):
+    if request.method == "POST":
+        # Получаем отправленное сообщение
+        message_text = request.POST.get('message')
+        friend = get_object_or_404(User, pk=user_id)
+
+        # Создаем и сохраняем новое сообщение
+        message = Message.objects.create(
+            sender=request.user,
+            receiver=friend,
+            text=message_text
+        )
+
+        return JsonResponse({"success": True}, status=200)
 
 
 @csrf_protect

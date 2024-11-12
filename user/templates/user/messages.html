@@ -173,7 +173,7 @@
     <h4>Chats</h4>
     <div class="chat-list">
       {% for user in friends %}
-      <div class="chat-item active">{{ user.username }}</div>
+      <div class="chat-item active" onclick="LOL">{{ user.username }}</div>
       {% endfor %}
     </div>
   </div>
@@ -202,4 +202,11 @@
       <button class="btn btn-primary" type="button">Send</button>
     </div>
   </div>
+
+  <script>
+    function LOL()
+    {
+      condole.log("LOL");
+    }
+  </script>
 {% endblock %}

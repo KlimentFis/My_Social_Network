@@ -166,7 +166,7 @@
 
     <!-- Friends -->
     {% if friends.count > 0 %}
-      <h2 style="text-align: center; color: red;">Friends</h2>
+      <h2 style="text-align: center;">Friends</h2>
       <div class="contactList" id="friendsList">
         {% for user in friends %}
           <div class="contact-item">
@@ -181,7 +181,7 @@
 
     <!-- Subscribers -->
     {% if subscribers.count > 0 %}
-      <h2 style="text-align: center; color: red;">Subscribers</h2>
+      <h2 style="text-align: center;">Subscribers</h2>
       <div class="contactList" id="subscribersList">
         {% for user in subscribers %}
           <div class="contact-item">
@@ -196,7 +196,7 @@
 
     <!-- I'm following -->
     {% if subscriptions.count > 0 %}
-      <h2 style="text-align: center; color: red;">I'm following</h2>
+      <h2 style="text-align: center;">I'm following</h2>
       <div class="contactList" id="subscriptionsList">
         {% for user in subscriptions %}
           <div class="contact-item">
