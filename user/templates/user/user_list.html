@@ -155,7 +155,7 @@
   <div class="top-sidebar" id="topSidebar">
     <a href="{% url 'news' %}">Главная</a>
     <a href="{% url 'messages' %}">Сообщения</a>
-    <a href="{% url 'profile' %}">Моя страница</a>
+    <a href="{% url 'profile' id=request.user.id %}">Моя страница</a>
     <a href="{% url 'friends' %}">Друзья</a>
     <a href="{% url 'user_logout' %}" style="color: red;">Выход</a>
   </div>

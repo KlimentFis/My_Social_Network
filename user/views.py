@@ -116,7 +116,7 @@ def news(request):
 
 def profile(request, id):
     user = MyUser.objects.filter(pk=id)
-    return render(request, {"user": user})
+    return render(request, "user/profile.html", {"user": user})
 
 
 def edit_profile(request):
