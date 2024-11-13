@@ -110,13 +110,11 @@
               </div>
             </div>
 
-            {% if request.user.id == user.id %}
+            {% if not request.user.id == user.id %}
             <div class="mb-3">
-              {% if request.user.username %}
               <a href="{% url 'edit_profile' %}" class="btn btn-outline-light text-decoration-none">
                 Edit Profile
               </a>
-              {% endif %}
             </div>
             {% endif %}
           </div>
