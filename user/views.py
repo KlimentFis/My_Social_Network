@@ -100,37 +100,44 @@ def user_login(request):
             return render(request, "user/login.html", {"error": "Invalid username or password"})
 
 
+@csrf_protect
+@login_required
 def create_post(request):
     if request.method == "GET":
         return render(request, "user/create_post.html")
 
 
+@login_required
 def user_logout(request):
     logout(request)
     return redirect('login_or_register')
 
 
+@login_required
 def news(request):
     return render(request, "user/news.html")
 
 
+@login_required
 def profile(request, id):
     user = MyUser.objects.get(pk=id)
-    print(user.username)
     return render(request, "user/profile.html", {"user": user})
 
 
+@csrf_protect
+@login_required
 def edit_profile(request):
     if request.method == "GET":
         return render(request, "user/edit_profile.html")
     elif request.method == "POST":
         request.user.bio = request.POST.get("BIO", "").strip()
         request.user.interests = request.POST.get("Interests", "").strip()
-        request.user.phone = request.POST.get("Phone", "").strip()
         request.user.country = request.POST.get("Country", "").strip()
-        request.user.city = request.POST.get("City", "").strip()
+        request.user.phone = request.POST.get("Phone", "").strip() or request.user.phone
+        request.user.city = request.POST.get("City", "").strip() or request.user.city
+
         request.user.save()
-        return redirect("profile")
+        return render(request, "user/edit_profile.html", {"user": request.user})
 
 
 @login_required
