@@ -94,15 +94,15 @@
                 <img class="user-image" src="{% static 'чел.png' %}" alt="" style="height:300px; weight:300px; border-radius: 50vh; background-color: darkred;">
             {% endif %}
 <!--            <img src="https://via.placeholder.com/150" class="rounded-circle mb-3" alt="Profile Picture">-->
-            <h4>Username: {{ request.user.username }}</h4>
-            <h5 class="form-label">Friends: {{ request.user.friends.all.count }}</h5>
-            <h5 class="form-label">Subscribers: {{ request.user.subscribers.all.count }}</h5>
-            <h5 class="form-label">Subscriptions: {{ request.user.subscriptions.all.count }}</h5>
-            <h5 class="form-label">{% if not request.user.about_me == "" %}About Me: {{ request.user.about_me }}{% endif %}</h5>
+            <h4>Username: {{ user.username }}</h4>
+            <h5 class="form-label">Friends: {{ user.friends.all.count }}</h5>
+            <h5 class="form-label">Subscribers: {{ user.subscribers.all.count }}</h5>
+            <h5 class="form-label">Subscriptions: {{ user.subscriptions.all.count }}</h5>
+            <h5 class="form-label">{% if not user.about_me == "" %}About Me: {{ request.user.about_me }}{% endif %}</h5>
 <!--            <p>About Me: {{ request.user.about_me }}</p>-->
             <div class="mb-3">
               <div class="mb-3">
-                {% if not request.user in request.user.friends %}
+                {% if not user.phone %}
                 <h5 class="form-label">Phone: None</h5>
                 {% else %}
                 <h5 class="form-label">Phone: {{ user.phone }}</h5>
@@ -110,11 +110,13 @@
               </div>
             </div>
 
-            {% if not request.user.id == user.id %}
+            {% if request.user.id == user.id %}
             <div class="mb-3">
+              {% if request.user.username %}
               <a href="{% url 'edit_profile' %}" class="btn btn-outline-light text-decoration-none">
                 Edit Profile
               </a>
+              {% endif %}
             </div>
             {% endif %}
           </div>

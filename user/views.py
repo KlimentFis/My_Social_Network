@@ -115,7 +115,8 @@ def news(request):
 
 
 def profile(request, id):
-    user = MyUser.objects.filter(pk=id)
+    user = MyUser.objects.get(pk=id)
+    print(user.username)
     return render(request, "user/profile.html", {"user": user})
 
 
