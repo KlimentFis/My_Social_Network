@@ -3,30 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}Chat Interface{% endblock %}</title>
+  <title>Profile</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
       background-color: #121212;
       color: #fff;
-      height: 100vh;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      font-family: Arial, sans-serif;
-      font-size: 16px;
     }
 
     .container {
-      display: flex;
-      height: 100%;
-      max-width: 1000px;
-      width: 100%;
-      margin: auto;
+      margin-top: 40px; /* Отступ сверху для навбара */
+    }
+
+    .card {
       background-color: #1e1e1e;
-      border-radius: 8px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-      overflow: hidden;
+    }
+
+    .text-light {
+      color: #fff !important;
     }
 
     /* Верхний выезжающий сайдбар */
@@ -65,25 +59,12 @@
       z-index: 999;
     }
 
-    /* Адаптивные стили */
-    @media (max-width: 768px) {
-      .message .message-text {
-        max-width: 80%;
-      }
+    .user-image {
+      backgroun-color: darkred;
     }
 
-    @media (max-width: 576px) {
-      body {
-        font-size: 14px;
-      }
-
-      .message .message-text {
-        max-width: 100%;
-      }
-
-      .sidebar {
-        width: 200px;
-      }
+    .user-image:hover {
+      backgroun-color: red;
     }
   </style>
 </head>
@@ -101,9 +82,59 @@
     <a href="{% url 'user_logout' %}" style="color: red;">Выход</a>
   </div>
 
-  <!-- Основной контейнер -->
-  <div class="container">
-    {% block content %}{% endblock %}
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-md-6 mx-auto">
+        <div class="card">
+          <div class="card-body text-center text-light">
+            <form>
+              <h2 align="center" style="margin-bottom: 30px;">Edit profile</h2>
+              <div class="mb-3">
+                <h5 for="BIO" class="form-label">Your BIO:</h5>
+                <textarea class="form-control" id="exampleFormControlTextarea1" rows="6" placeholder="Enter your BIO..."></textarea>
+              </div>
+
+              <div class="mb-3">
+                <h5 for="Interests" class="form-label">Interests:</h5>
+                <textarea class="form-control" id="exampleFormControlTextarea1" rows="6" placeholder="Enter your Interests..."></textarea>
+              </div>
+
+              <div class="mb-3">
+                <h5 for="Phone" class="form-label">Phone:</h5>
+                <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="Enter your phone...">
+              </div>
+
+              <div class="mb-3">
+                <h5 for="Visible" class="form-label">Phone visible for:</h5>
+                <select class="form-select" aria-label="Default select example">
+                  <option selected>Open this select menu</option>
+                  <option value="friends">Only for Friends</option>
+                  <option value="me">All users</option>
+                  <option value="me">Only for me</option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <h5 for="Country" class="form-label">Country:</h5>
+                <select class="form-select" aria-label="Default select example">
+                  <option value="friends">Russia</option>
+                  <option value="friends">Ukraine</option>
+                  <option value="me"></option>
+                  <option value="me">Only for me</option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <h5 for="City" class="form-label">City:</h5>
+                <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="Enter your City...">
+              </div>
+
+              <button type="submit" class="btn btn-danger">Save</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>

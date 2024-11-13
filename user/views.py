@@ -1,10 +1,9 @@
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_protect
 from .models import MyUser
-from django.http import JsonResponse
 import json
 
 # Create your views here.
@@ -115,9 +114,22 @@ def news(request):
     return render(request, "user/news.html")
 
 
-def profile(request):
-    return render(request, "user/profile.html")
+def profile(request, id):
+    user = MyUser.objects.filter(pk=id)
+    return render(request, {"user": user})
 
+
+def edit_profile(request):
+    if request.method == "GET":
+        return render(request, "user/edit_profile.html")
+    elif request.method == "POST":
+        request.user.bio = request.POST.get("BIO", "").strip()
+        request.user.interests = request.POST.get("Interests", "").strip()
+        request.user.phone = request.POST.get("Phone", "").strip()
+        request.user.country = request.POST.get("Country", "").strip()
+        request.user.city = request.POST.get("City", "").strip()
+        request.user.save()
+        return redirect("profile")
 
 
 @login_required

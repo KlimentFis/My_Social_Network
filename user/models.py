@@ -25,7 +25,13 @@ class MyUser(AbstractUser):
         symmetrical=False,   # Подписки также асимметричны
         verbose_name='Подписки'
     )
+
     about_me = models.TextField('Обо мне', blank=True)
+    phone = models.TextField('Телефон', blank=False)
+    bio = models.TextField('Обо мне', blank=False)
+    interests = models.TextField('Интересы', blank=False)
+    country = models.TextField('Страна', blank=False)
+    city = models.TextField('Город', blank=False)
 
     def __str__(self):
         return f"{self.first_name} {self.username}"
