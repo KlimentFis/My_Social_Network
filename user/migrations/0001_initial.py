@@ -35,6 +35,11 @@ class Migration(migrations.Migration):
                 ('friends', models.ManyToManyField(blank=True, related_name='user_friends', to=settings.AUTH_USER_MODEL, verbose_name='Друзья')),
                 ('groups', models.ManyToManyField(blank=True, help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.', related_name='user_set', related_query_name='user', to='auth.group', verbose_name='groups')),
                 ('user_permissions', models.ManyToManyField(blank=True, help_text='Specific permissions for this user.', related_name='user_set', related_query_name='user', to='auth.permission', verbose_name='user permissions')),
+                ('phone', models.CharField(max_length=12, verbose_name='phone')),
+                ('bio', models.TextField(max_length=300, verbose_name='bio')),
+                ('interests', models.TextField(max_length=300, verbose_name='interests')),
+                ('country', models.CharField(max_length=20, verbose_name='country')),
+                ('city', models.CharField(max_length=20, verbose_name='city')),
             ],
             options={
                 'verbose_name': 'user',

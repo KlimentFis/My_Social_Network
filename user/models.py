@@ -26,7 +26,6 @@ class MyUser(AbstractUser):
         verbose_name='Подписки'
     )
 
-    # about_me = models.TextField('Обо мне', blank=True)
     phone = models.TextField('Телефон', blank=False)
     bio = models.TextField('Обо мне', blank=False)
     interests = models.TextField('Интересы', blank=False)

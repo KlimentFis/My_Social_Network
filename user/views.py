@@ -137,7 +137,6 @@ def edit_profile(request):
         request.user.city = request.POST.get("City", "").strip() or request.user.city
 
         request.user.save()
-        # return render(request, "user/edit_profile.html", {"user": request.user})
         return redirect('profile', id=request.user.id)
 
 @login_required
