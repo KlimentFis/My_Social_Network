@@ -57,7 +57,7 @@
     }
 
     .chat-item.active {
-      background-color: #555555;
+      background-color: #555;
     }
 
     /* Основной контейнер сообщений */
@@ -107,40 +107,53 @@
     }
 
     .message-user2 .message-text {
-      background-color: #555555;
+      background-color: #555;
       color: #fff;
     }
 
     .input-group {
-      padding: 12px;
+      display: flex;
+      gap: 10px;
+      padding: 10px 20px;
+      background-color: #292929;
       border-top: 1px solid #444;
-      background-color: #333;
     }
 
     .input-group .form-control {
-      background-color: #444;
+      flex-grow: 1;
+      height: 40px;
+      padding: 10px 15px;
+      font-size: 14px;
+      border-radius: 20px;
+      background-color: #333;
       color: #fff;
-      border-radius: 24px;
-      padding: 10px 20px;
       border: none;
       outline: none;
     }
 
     .input-group .form-control:focus {
-      box-shadow: none;
-      border-color: #555555;
+      box-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+      background-color: #444;
     }
 
     .input-group .btn {
-      border-radius: 24px;
-      background-color: #555555;
-      color: #fff;
       padding: 10px 20px;
-      margin-left: 10px;
+      font-size: 14px;
+      border-radius: 20px;
+      background-color: #555;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
     }
 
     .input-group .btn:hover {
-      background-color: #666666;
+      background-color: #666;
+    }
+
+    .input-group .btn:active {
+      background-color: #777;
+      transform: scale(0.98);
     }
 
     /* Адаптивные стили */
@@ -163,46 +176,54 @@
         width: 200px;
       }
 
-      .up {
-      padding-top: 60px; /* Отступ для верхнего сайдбара */
+      .input-group .form-control {
+        height: 36px;
+        padding: 8px 12px;
+        font-size: 13px;
+      }
+
+      .input-group .btn {
+        padding: 8px 16px;
+        font-size: 13px;
       }
     }
   </style>
 
-  <!-- Основной контейнер чата с боковой панелью чатов -->
+  <div class="container">
     <!-- Левая панель чатов -->
-  <div class="sidebar">
-    <h4>Chats</h4>
-    <div class="chat-list">
-      {% for user in all_users %}
-        <a href="{% url 'chat_id' user.id %}">
-          <div class="chat-item {% if current_user and user.id == current_user.id %}active{% endif %}">
-            {{ user.username }}
-          </div>
-        </a>
-      {% endfor %}
+    <div class="sidebar">
+      <h4>Chats</h4>
+      <div class="chat-list">
+        {% for user in all_users %}
+          <a href="{% url 'chat_id' user.id %}">
+            <div class="chat-item {% if current_user and user.id == current_user.id %}active{% endif %}">
+              {{ user.username }}
+            </div>
+          </a>
+        {% endfor %}
+      </div>
     </div>
-  </div>
 
-  <div class="main-content">
-    <div class="message-list">
-      {% for message in messages %}
-        <div class="message {% if message.sender_id == request.user.id %}message-user1{% else %}message-user2{% endif %}">
-          <div class="message-text">
+    <!-- Основной контент -->
+    <div class="main-content">
+      <!-- Список сообщений -->
+      <div class="message-list">
+        {% for message in messages %}
+          <div class="message {% if message.sender_id == request.user.id %}message-user1{% else %}message-user2{% endif %}">
+            <div class="message-text">
               <p>{{ message.text }}</p>
               <span class="message-timestamp">{{ message.timestamp|date:"H:i" }}</span>
+            </div>
           </div>
-        </div>
-      {% endfor %}
-    </div>
-
-    <form method="POST">
-      {% csrf_token %}
-      <div class="message-input">
-        <textarea name="message" placeholder="Write a message..."></textarea>
-        <button type="submit">Send</button>
+        {% endfor %}
       </div>
-    </form>
-  </div>
 
+      <!-- Форма отправки сообщений -->
+      <form method="POST" class="input-group">
+        {% csrf_token %}
+        <input type="text" name="message" class="form-control" placeholder="Write a message...">
+        <button type="submit" class="btn">Send</button>
+      </form>
+    </div>
+  </div>
 {% endblock %}
