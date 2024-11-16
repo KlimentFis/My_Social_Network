@@ -1,53 +1,67 @@
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
+from django.urls import reverse
 from django.utils import timezone
 from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_protect
 from .models import MyUser
+from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse, HttpResponseRedirect
+from .models import Message
+from django.contrib.auth.models import User
+from django.views.decorators.csrf import csrf_exempt
 import json
 
-# Create your views here.
+
 def login_or_register(request):
     return render(request, "user/log_or_reg.html")
 
 
-from django.shortcuts import render, get_object_or_404
-from django.http import JsonResponse
-from .models import Message
-from django.contrib.auth.models import User
-from django.views.decorators.csrf import csrf_exempt
-
-
 def messages(request):
-    # Получаем всех друзей пользователя
     all_users = set([request.user]) | set(request.user.friends.all()) | set(request.user.subscriptions.all()) | set(
         request.user.subscribers.all())
     for user in all_users:
         if user == request.user:
             user.username = "Избранное"
 
-    return render(request, "user/messages.html", {"friends": all_users})
+    return render(request, "user/messages.html", {
+        "all_users": all_users,
+        "current_user": None  # Добавляем значение по умолчанию
+    })
 
 
-def chat_id(request, pk):
-    messages = Message.objects.filter(recipient = pk) | Message.objects.filter(sender = pk)
-    return render(request, "user/message.html", {"messages": messages})
+@login_required
+def chat_id(request, id):
+    chat_user = get_object_or_404(MyUser, id=id)
 
-@csrf_exempt
-def send_message(request, user_id):
-    if request.method == "POST":
-        # Получаем отправленное сообщение
-        message_text = request.POST.get('message')
-        friend = get_object_or_404(User, pk=user_id)
+    # Выбираем все сообщения между текущим пользователем и собеседником
+    messages = Message.objects.filter(
+        (Q(sender=request.user) & Q(recipient=chat_user)) |
+        (Q(sender=chat_user) & Q(recipient=request.user))
+    ).order_by('timestamp')  # Сортируем по времени
 
-        # Создаем и сохраняем новое сообщение
-        message = Message.objects.create(
-            sender=request.user,
-            receiver=friend,
-            text=message_text
-        )
+    # Обработка POST запроса для отправки нового сообщения
+    if request.method == 'POST':
+        message_content = request.POST.get('message')
+        if message_content:
+            Message.objects.create(
+                sender=request.user,
+                recipient=chat_user,
+                text=message_content
+            )
+        return HttpResponseRedirect(reverse('chat_id', args=[chat_user.id]))
 
-        return JsonResponse({"success": True}, status=200)
+    all_users = MyUser.objects.all()
+    for i in all_users:
+        if i.username == request.user.username:
+            i.username = "Избранное"
+
+    return render(request, "user/messages.html", {
+        "messages": messages,
+        "all_users": all_users,
+        "current_user": chat_user
+    })
 
 
 @csrf_protect

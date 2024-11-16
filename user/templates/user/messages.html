@@ -1,4 +1,7 @@
 {% extends 'base.html' %}
+
+{% block title %}Messages{% endblock %}
+
 {% block content %}
   <style>
     body {
@@ -171,41 +174,35 @@
   <div class="sidebar">
     <h4>Chats</h4>
     <div class="chat-list">
-      {% for user in friends %}
-      <div class="chat-item active" onclick="LOL">{{ user.username }}</div>
+      {% for user in all_users %}
+        <a href="{% url 'chat_id' user.id %}">
+          <div class="chat-item {% if current_user and user.id == current_user.id %}active{% endif %}">
+            {{ user.username }}
+          </div>
+        </a>
       {% endfor %}
     </div>
   </div>
 
-  <!-- Основной контент -->
   <div class="main-content">
     <div class="message-list">
-      <!-- Сообщение от пользователя 1 -->
-      <div class="message message-user1">
-        <div class="message-text">
-          <p>Hello, how are you?</p>
+      {% for message in messages %}
+        <div class="message {% if message.sender_id == request.user.id %}message-user1{% else %}message-user2{% endif %}">
+          <div class="message-text">
+              <p>{{ message.text }}</p>
+              <span class="message-timestamp">{{ message.timestamp|date:"H:i" }}</span>
+          </div>
         </div>
-      </div>
-
-      <!-- Сообщение от пользователя 2 -->
-      <div class="message message-user2">
-        <div class="message-text">
-          <p>I'm doing great, thanks for asking!</p>
-        </div>
-      </div>
+      {% endfor %}
     </div>
 
-    <!-- Форма ввода сообщения -->
-    <div class="input-group">
-      <input type="text" class="form-control message-input" placeholder="Type a message...">
-      <button class="btn btn-primary" type="button">Send</button>
-    </div>
+    <form method="POST">
+      {% csrf_token %}
+      <div class="message-input">
+        <textarea name="message" placeholder="Write a message..."></textarea>
+        <button type="submit">Send</button>
+      </div>
+    </form>
   </div>
 
-  <script>
-    function LOL()
-    {
-      condole.log("LOL");
-    }
-  </script>
 {% endblock %}

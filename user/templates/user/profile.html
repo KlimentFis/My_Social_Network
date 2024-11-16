@@ -87,13 +87,13 @@
       <div class="col-md-6 mx-auto">
         <div class="card">
           <div class="card-body text-center text-light">
-              {% load static %}
+            {% load static %}
 
               <!-- User image -->
               {% if request.user.image %}
                   <img class="user-image" src="{{ request.user.image }}" alt="" style="height:300px; weight:300px; border-radius: 50vh;">
               {% else %}
-                  <img class="user-image" src="{% static 'чел.png' %}" alt="" style="height:300px; weight:300px; border-radius: 50vh; background-color: darkred;">
+                  <img class="user-image" src="{% static 'чел.png' %}" alt="" style="height:300px; weight:300px; border-radius: 50vh; background-color: green;">
               {% endif %}
 
               <!-- Username -->
@@ -134,7 +134,6 @@
               </div>
               {% endif %}
           </div>
-      </div>
         </div>
       </div>
     </div>
