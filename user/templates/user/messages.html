@@ -212,7 +212,7 @@
           <div class="message {% if message.sender_id == request.user.id %}message-user1{% else %}message-user2{% endif %}">
             <div class="message-text">
               <p>{{ message.text }}</p>
-              <span class="message-timestamp">{{ message.timestamp|date:"H:i" }}</span>
+              <span class="message-timestamp">{{ message.timestamp|date:"d.m.y H:i" }}</span>
             </div>
           </div>
         {% endfor %}

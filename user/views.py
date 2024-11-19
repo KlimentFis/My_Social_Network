@@ -1,17 +1,17 @@
 from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.urls import reverse
 from django.utils import timezone
-from django.shortcuts import redirect
-from django.views.decorators.csrf import csrf_protect
 from .models import MyUser
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.http import JsonResponse, HttpResponseRedirect
 from .models import Message
-from django.contrib.auth.models import User
-from django.views.decorators.csrf import csrf_exempt
 import json
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.db import transaction
+from django.views.decorators.csrf import csrf_protect
+from .models import Post, Post_Image
 
 
 def login_or_register(request):
@@ -114,11 +114,51 @@ def user_login(request):
             return render(request, "user/login.html", {"error": "Invalid username or password"})
 
 
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.db import transaction
+from django.views.decorators.csrf import csrf_protect
+from .models import Post, Post_Image
+
 @csrf_protect
 @login_required
 def create_post(request):
-    if request.method == "GET":
-        return render(request, "user/create_post.html")
+    if request.method == 'POST':
+        # Получаем данные из формы
+        title = request.POST.get('title')
+        content = request.POST.get('content')
+        images = request.FILES.getlist('images')  # Получаем список изображений
+
+        # Проверка на наличие хотя бы одного из полей: title, content или images
+        if not ((title and content) or images):
+            return render(request, 'user/create_post.html', {
+                'error': 'Please provide a title, content, or at least one image.'
+            })
+
+        try:
+            # Начинаем транзакцию
+            with transaction.atomic():
+                # Если title и content пустые, создаем пост с дефолтными значениями
+                post = Post.objects.create(
+                    title=title if title else "Untitled",
+                    content=content if content else "Untitled"
+                )
+
+                # Если есть изображения, сохраняем их и привязываем к посту
+                for image in images:
+                    Post_Image.objects.create(image=image, post=post)
+
+            # После успешного создания редиректим на страницу новостей
+            return redirect('news')  # Здесь 'news' - это имя вашего маршрута, куда хотите направить
+
+        except Exception as e:
+            # Если произошла ошибка, возвращаем ошибку
+            return render(request, 'user/create_post.html', {
+                'error': f'Error while creating post: {e}'
+            })
+
+    return render(request, 'user/create_post.html')
+
 
 
 @login_required
@@ -129,7 +169,12 @@ def user_logout(request):
 
 @login_required
 def news(request):
-    return render(request, "user/news.html")
+    posts = Post.objects.all()
+    images = []
+
+    for i in posts:
+        ...
+    return render(request, "user/news.html", {"posts":posts, "images": images})
 
 
 @login_required

@@ -61,29 +61,30 @@
     <div class="container">
       <div class="row">
         <div class="col-md-6 mx-auto">
-          <h2 class="text-center">Create a Post</h2>
-          <form>
+          <h2 class="text-center">Create Post</h2>
+         <form method="POST" action="{% url 'create_post' %}" enctype="multipart/form-data">
+            {% csrf_token %}
             <div class="mb-3">
-              <label for="title" class="form-label">Post Title</label>
-              <input type="text" class="form-control" id="title" placeholder="Enter post title">
+                <label for="title" class="form-label">Title</label>
+                <input type="text" class="form-control" id="title" name="title" placeholder="Enter post title">
             </div>
             <div class="mb-3">
-              <label for="content" class="form-label">Content</label>
-              <textarea class="form-control" id="content" rows="5" placeholder="Enter post content"></textarea>
+                <label for="content" class="form-label">Content</label>
+                <textarea class="form-control" id="content" name="content" rows="5" placeholder="Enter post content"></textarea>
             </div>
 
             <!-- Area for uploading photos -->
             <div class="mb-3">
-              <label for="image-upload" class="form-label">Attach Photos</label>
-              <div id="drop-area" class="drop-area">
-                Drag & Drop images here or click to upload
-                <input type="file" id="image-upload" class="form-control d-none" accept="image/*" multiple>
-              </div>
-              <div id="preview" class="preview"></div>
+                <label for="image-upload" class="form-label">Attach Photos</label>
+                <div id="drop-area" class="drop-area">
+                    Drag & Drop images here or click to upload
+                    <input type="file" id="image-upload" name="images" class="form-control d-none" accept="image/*" multiple>
+                </div>
+                <div id="preview" class="preview"></div>
             </div>
 
             <button type="submit" class="btn btn-danger w-100">Post</button>
-          </form>
+        </form>
         </div>
       </div>
     </div>
