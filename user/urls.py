@@ -31,6 +31,3 @@ urlpatterns = [
     path("logout", user_logout, name="user_logout"),
     path("edit_profile", edit_profile, name="edit_profile")
 ]
-
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

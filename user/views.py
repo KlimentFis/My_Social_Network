@@ -169,12 +169,8 @@ def user_logout(request):
 
 @login_required
 def news(request):
-    posts = Post.objects.all()
-    images = []
-
-    for i in posts:
-        ...
-    return render(request, "user/news.html", {"posts":posts, "images": images})
+    posts = Post.objects.prefetch_related('images').all()
+    return render(request, 'user/news.html', {'posts': posts})
 
 
 @login_required

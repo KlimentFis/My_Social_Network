@@ -91,6 +91,10 @@
       background-color: rgba(139, 0, 0);
     }
 
+    .post-images img {
+      width: auto;   /* Оставляет естественную ширину изображения */
+      height: auto;  /* Оставляет естественную высоту изображения */
+    }
   </style>
 
   <!-- Блок с плюсиком-ссылкой для создания поста -->
@@ -98,14 +102,27 @@
 
 
   <!-- Новостной элемент 2 -->
+{% for post in posts %}
   <div class="news-item">
     <div class="author-info">
       <img src="https://via.placeholder.com/50" alt="Author Avatar">
       <span>Jane Smith</span>
     </div>
-    <img src="https://via.placeholder.com/1000x500" alt="News Image 2">
-    <h2>Breaking News 2</h2>
-    <p>Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet.</p>
+    <div class="post-images" align="center">
+      {% for image in post.images.all %}
+        <img src="{{ image.image.url }}" alt="Image for {{ post.title }}">
+      {% endfor %}
+    </div>
+    {% if post.title != 'Untitled' %}
+      <h2>{{ post.title }}</h2>
+    {% endif %}
+    {% if post.content != 'Untitled' %}
+      <p>{{ post.content }}</p>
+    {% endif %}
   </div>
+{% endfor %}
+
+
+
 
 {% endblock %}
