@@ -52,7 +52,8 @@ def chat_id(request, id):
             )
         return HttpResponseRedirect(reverse('chat_id', args=[chat_user.id]))
 
-    all_users = MyUser.objects.all()
+    all_users = set([request.user]) | set(request.user.friends.all()) | set(request.user.subscriptions.all()) | set(
+        request.user.subscribers.all())
     for i in all_users:
         if i.username == request.user.username:
             i.username = "Избранное"
