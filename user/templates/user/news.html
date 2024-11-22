@@ -35,7 +35,7 @@
     .news-item img {
       width: 100%;
       height: auto;
-      max-height: 500px;
+
       object-fit: cover;
       border-radius: 8px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
@@ -83,7 +83,7 @@
       font-size: 50px;
       font-weight: bold;
       line-height: 80px;
-      margin: 60px auto 20px auto; /* Отступ сверху 80px, снизу 20px */
+      margin: 60px auto 20px auto;
       text-decoration: none;
       transition: background-color 0.3s ease;
     }
@@ -99,55 +99,6 @@
 
     .post-images {
       background-color: grey;
-    }
-
-    /* Медиазапросы для адаптивности */
-    @media (max-width: 768px) {
-      .news-item h2 {
-        font-size: 20px;  /* Уменьшаем размер заголовков на мобильных устройствах */
-      }
-
-      .news-item p {
-        font-size: 16px;  /* Уменьшаем размер текста */
-      }
-
-      .author-info {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .author-info img {
-        margin-right: 0;
-        margin-bottom: 10px;
-      }
-
-      .create-post-link {
-        width: 60px;
-        height: 60px;
-        font-size: 40px;
-        line-height: 60px;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .container {
-        padding: 15px;
-      }
-
-      .news-item h2 {
-        font-size: 18px;  /* Еще больше уменьшаем размер заголовков */
-      }
-
-      .news-item p {
-        font-size: 14px;  /* Уменьшаем размер текста */
-      }
-
-      .create-post-link {
-        width: 50px;
-        height: 50px;
-        font-size: 35px;
-        line-height: 50px;
-      }
     }
   </style>
 

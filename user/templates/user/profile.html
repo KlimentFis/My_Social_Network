@@ -66,6 +66,13 @@
     .user-image:hover {
       backgroun-color: red;
     }
+
+    .post-images img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
   </style>
 </head>
 <body>
@@ -133,6 +140,32 @@
                   {% endif %}
               </div>
               {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container mt-5">
+      <div class="row">
+        <div class="col-md-6 mx-auto">
+          <div class="card">
+            <div class="card-body text-center text-light">
+              <h4>Посты:</h4>
+              {% for post in posts %}
+              <div class="news-item">
+                <div class="post-images" align="center">
+                  {% for image in post.images.all %}
+                    <img src="{{ image.image.url }}" alt="Image for {{ post.title }}">
+                  {% endfor %}
+                </div>
+                {% if post.title != 'Untitled' %}
+                  <h2>{{ post.title }}</h2>
+                {% endif %}
+                {% if post.content != 'Untitled' %}
+                  <p>{{ post.content }}</p>
+                {% endif %}
+              </div>
+              {% endfor %}
+            </div>
           </div>
         </div>
       </div>

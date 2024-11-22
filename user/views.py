@@ -159,14 +159,25 @@ def user_logout(request):
 
 @login_required
 def news(request):
-    posts = Post.objects.prefetch_related('images').all()
+    user = request.user
+
+    # Получаем список друзей и подписок
+    friends_and_subscriptions = MyUser.objects.filter(
+        Q(pk__in=user.friends.all()) |  # ID друзей
+        Q(pk__in=user.subscriptions.all())  # ID подписок
+    )
+
+    # Фильтруем посты только авторов из списка друзей и подписок
+    posts = Post.objects.prefetch_related('images').filter(author__in=friends_and_subscriptions)
+
     return render(request, 'user/news.html', {'posts': posts})
 
 
 @login_required
 def profile(request, id):
     user = MyUser.objects.get(pk=id)
-    return render(request, "user/profile.html", {"user": user})
+    posts = Post.objects.filter(pk=id)
+    return render(request, "user/profile.html", {"user": user, "posts": posts})
 
 
 @csrf_protect
@@ -257,3 +268,8 @@ def friends(request):
     }
 
     return render(request, 'user/user_list.html', context)
+
+@login_required
+def edit_profile_photo(request):
+    if request.method == "POST":
+        ...
