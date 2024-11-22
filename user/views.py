@@ -6,12 +6,12 @@ from .models import MyUser
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse, HttpResponseRedirect
 from .models import Message
-import json
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.views.decorators.csrf import csrf_protect
 from .models import Post, Post_Image
+import json
 
 
 def login_or_register(request):
@@ -114,40 +114,31 @@ def user_login(request):
             return render(request, "user/login.html", {"error": "Invalid username or password"})
 
 
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from django.db import transaction
-from django.views.decorators.csrf import csrf_protect
-from .models import Post, Post_Image
-
 @csrf_protect
 @login_required
 def create_post(request):
     if request.method == 'POST':
-        # Получаем данные из формы
         title = request.POST.get('title')
         content = request.POST.get('content')
-        images = request.FILES.getlist('images')  # Получаем список изображений
+        images = request.FILES.getlist('images')
 
-        # Проверка на наличие хотя бы одного из полей: title, content или images
         if not ((title and content) or images):
             return render(request, 'user/create_post.html', {
                 'error': 'Please provide a title, content, or at least one image.'
             })
 
         try:
-            # Начинаем транзакцию
             with transaction.atomic():
                 # Если title и content пустые, создаем пост с дефолтными значениями
                 post = Post.objects.create(
                     title=title if title else "Untitled",
-                    content=content if content else "Untitled"
+                    content=content if content else "Untitled",
+                    author=request.user
                 )
 
                 # Если есть изображения, сохраняем их и привязываем к посту
                 for image in images:
                     Post_Image.objects.create(image=image, post=post)
-
             # После успешного создания редиректим на страницу новостей
             return redirect('news')  # Здесь 'news' - это имя вашего маршрута, куда хотите направить
 
@@ -158,7 +149,6 @@ def create_post(request):
             })
 
     return render(request, 'user/create_post.html')
-
 
 
 @login_required
@@ -190,7 +180,6 @@ def edit_profile(request):
         request.user.country = request.POST.get("Country", "").strip()
         request.user.phone = request.POST.get("Phone", "").strip() or request.user.phone
         request.user.city = request.POST.get("City", "").strip() or request.user.city
-
         request.user.save()
         return redirect('profile', id=request.user.id)
 

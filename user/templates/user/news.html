@@ -29,6 +29,7 @@
     .news-item {
       margin-bottom: 30px;
       text-align: left;
+      padding: 10px;
     }
 
     .news-item img {
@@ -92,25 +93,74 @@
     }
 
     .post-images img {
-      width: auto;   /* Оставляет естественную ширину изображения */
-      height: auto;  /* Оставляет естественную высоту изображения */
+      width: 100%;   /* Растягиваем изображение на всю ширину контейнера */
+      height: auto;  /* Оставляем естественную высоту изображения */
     }
 
     .post-images {
       background-color: grey;
+    }
+
+    /* Медиазапросы для адаптивности */
+    @media (max-width: 768px) {
+      .news-item h2 {
+        font-size: 20px;  /* Уменьшаем размер заголовков на мобильных устройствах */
+      }
+
+      .news-item p {
+        font-size: 16px;  /* Уменьшаем размер текста */
+      }
+
+      .author-info {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .author-info img {
+        margin-right: 0;
+        margin-bottom: 10px;
+      }
+
+      .create-post-link {
+        width: 60px;
+        height: 60px;
+        font-size: 40px;
+        line-height: 60px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 15px;
+      }
+
+      .news-item h2 {
+        font-size: 18px;  /* Еще больше уменьшаем размер заголовков */
+      }
+
+      .news-item p {
+        font-size: 14px;  /* Уменьшаем размер текста */
+      }
+
+      .create-post-link {
+        width: 50px;
+        height: 50px;
+        font-size: 35px;
+        line-height: 50px;
+      }
     }
   </style>
 
   <!-- Блок с плюсиком-ссылкой для создания поста -->
   <a href="{% url 'create_post' %}" class="create-post-link">+</a>
 
-
   <!-- Новостной элемент 2 -->
 {% for post in posts %}
   <div class="news-item">
     <div class="author-info">
-      <img src="https://via.placeholder.com/50" alt="Author Avatar">
-      <span>Jane Smith</span>
+      {% load static %}
+      <img style="border: 2px solid red; backgroun-color: red;" src="{% if post.author.image %}{{post.author.image}}{% else %}{% static 'чел.png' %}{% endif %}" alt="{{ post.author.username }}">
+      <span>{{ post.author.username }}</span>
     </div>
     <div class="post-images" align="center">
       {% for image in post.images.all %}
@@ -125,8 +175,5 @@
     {% endif %}
   </div>
 {% endfor %}
-
-
-
 
 {% endblock %}

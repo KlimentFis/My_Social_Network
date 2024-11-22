@@ -30,4 +30,4 @@ urlpatterns = [
     path("friends/", friends, name="friends"),
     path("logout", user_logout, name="user_logout"),
     path("edit_profile", edit_profile, name="edit_profile")
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
