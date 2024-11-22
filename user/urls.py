@@ -17,7 +17,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
 from .views import messages, user_register, user_login, user_logout, news, profile, friends, chat_id, \
-edit_profile, create_post, edit_profile_photo
+edit_profile, create_post, upload_image, delete_post
 
 urlpatterns = [
     path("messages", messages, name="messages"),
@@ -27,8 +27,9 @@ urlpatterns = [
     path("register", user_register, name="register"),
     path("login", user_login, name="login"),
     path("create_post/", create_post, name="create_post"),
+    path("delete_post/", delete_post, name="delete_post"),
     path("friends/", friends, name="friends"),
     path("logout", user_logout, name="user_logout"),
+    path('profile/upload_image/', upload_image, name='upload_image'),
     path("edit_profile", edit_profile, name="edit_profile"),
-    path("edit_profile_photo", edit_profile_photo, name="edit_profile_photo")
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

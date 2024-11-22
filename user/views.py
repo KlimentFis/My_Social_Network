@@ -6,13 +6,13 @@ from .models import MyUser
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse, HttpResponseRedirect
 from .models import Message
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.views.decorators.csrf import csrf_protect
 from .models import Post, Post_Image
+from django.shortcuts import render
+from django.shortcuts import redirect
+from django.contrib.auth.decorators import login_required
 import json
-
 
 def login_or_register(request):
     return render(request, "user/log_or_reg.html")
@@ -152,9 +152,29 @@ def create_post(request):
 
 
 @login_required
+def delete_post(request):
+    ...
+
+
+@login_required
 def user_logout(request):
     logout(request)
     return redirect('login_or_register')
+
+
+@login_required
+def upload_image(request):
+    if request.method == 'POST':
+        image_file = request.FILES.get('image')  # Безопасное получение файла
+        if image_file:
+            request.user.image = image_file
+            request.user.save()
+            return redirect("profile", id=request.user.id)  # Передаем id пользователя в URL
+        else:
+            # Обработка ошибки, если файл не предоставлен
+            return redirect("profile", id=request.user.id)  # Можно указать сообщение об ошибке в сессии
+    return redirect("profile", id=request.user.id)  # Перенаправление с id для корректного профиля
+
 
 
 @login_required
@@ -176,7 +196,7 @@ def news(request):
 @login_required
 def profile(request, id):
     user = MyUser.objects.get(pk=id)
-    posts = Post.objects.filter(pk=id)
+    posts = Post.objects.all().filter(author=id)
     return render(request, "user/profile.html", {"user": user, "posts": posts})
 
 
@@ -268,8 +288,3 @@ def friends(request):
     }
 
     return render(request, 'user/user_list.html', context)
-
-@login_required
-def edit_profile_photo(request):
-    if request.method == "POST":
-        ...

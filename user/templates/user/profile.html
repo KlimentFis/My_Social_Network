@@ -73,6 +73,21 @@
       display: block;
       margin: 0 auto;
     }
+
+    #profilePhoto {
+    transition: transform 0.2s ease-in-out;
+    }
+
+    #profilePhoto:hover {
+        transform: scale(1.05);
+        border: 2px solid red;
+    }
+
+    .d-none {
+        display: none;
+    }
+
+
   </style>
 </head>
 <body>
@@ -97,11 +112,20 @@
             {% load static %}
 
               <!-- User image -->
-              {% if request.user.image %}
-                  <img class="user-image" src="{{ request.user.image }}" alt="" style="height:300px; weight:300px; border-radius: 50vh;">
-              {% else %}
-                  <img class="user-image" src="{% static 'чел.png' %}" alt="" style="height:300px; weight:300px; border-radius: 50vh; background-color: darkred;">
-              {% endif %}
+                <div class="profile-image-container text-center">
+                    <form id="uploadPhotoForm" action="upload_image/" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <label for="profilePhotoInput">
+                            {% if request.user.image %}
+                                <img id="profilePhoto" class="user-image" src="{{ user.image.url }}" alt="" style="height:300px; width:300px; border-radius: 50vh; cursor: pointer;">
+                            {% else %}
+                                <img id="profilePhoto" class="user-image" src="{% static 'чел.png' %}" alt="" style="height:300px; width:300px; border-radius: 50vh; background-color: darkred; cursor: pointer;">
+                            {% endif %}
+                        </label>
+                        <input id="profilePhotoInput" type="file" name="image" class="d-none" accept="image/*">
+                    </form>
+                </div>
+
 
               <!-- Username -->
               <h4 class="text-center">Username: {{ user.username }}</h4>
@@ -144,14 +168,15 @@
         </div>
       </div>
     </div>
+    {% if posts %}
     <div class="container mt-5">
       <div class="row">
         <div class="col-md-6 mx-auto">
           <div class="card">
             <div class="card-body text-center text-light">
-              <h4>Посты:</h4>
+              <h4>Posts:</h4>
               {% for post in posts %}
-              <div class="news-item">
+              <div class="news-item" style="margin-top: 50px;">
                 <div class="post-images" align="center">
                   {% for image in post.images.all %}
                     <img src="{{ image.image.url }}" alt="Image for {{ post.title }}">
@@ -170,6 +195,7 @@
         </div>
       </div>
     </div>
+    {% endif %}
   </div>
 
   <script>
@@ -201,7 +227,14 @@
     topSidebar.addEventListener('mouseenter', function() {
       clearTimeout(hideTimeout); // Останавливаем таймер
     });
-  </script>
 
+    document.getElementById('profilePhotoInput').addEventListener('change', function() {
+        // Проверка, выбран ли файл
+        if (this.files && this.files.length > 0) {
+            // Отправляем форму
+            document.getElementById('uploadPhotoForm').submit();
+        }
+    });
+  </script>
 </body>
 </html>

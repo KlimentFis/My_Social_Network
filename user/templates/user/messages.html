@@ -197,6 +197,12 @@
         {% for user in all_users %}
           <a href="{% url 'chat_id' user.id %}">
             <div class="chat-item {% if current_user and user.id == current_user.id %}active{% endif %}">
+              {% load static %}
+              {% if request.user.image %}
+                  <img id="profilePhoto" class="user-image" src="{{ user.image.url }}" alt="" style="height:65px; width:65px; border-radius: 50vh; cursor: pointer;">
+              {% else %}
+                  <img id="profilePhoto" class="user-image" src="{% static 'чел.png' %}" alt="" style="height:300px; width:300px; border-radius: 50vh; background-color: darkred; cursor: pointer;">
+              {% endif %}
               {{ user.username }}
             </div>
           </a>

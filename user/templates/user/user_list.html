@@ -171,7 +171,15 @@
         {% for user in friends %}
           <div class="contact-item">
             <div class="contact-info">
-              <span class="contact-name">{{ user.username }}</span>
+              <span class="contact-name">
+                {% load static %}
+                {% if request.user.image %}
+                    <img id="profilePhoto" class="user-image" src="{{ user.image.url }}" alt="" style="height:65px; width:65px; border-radius: 50vh; cursor: pointer;">
+                {% else %}
+                    <img id="profilePhoto" class="user-image" src="{% static 'чел.png' %}" alt="" style="height:300px; width:300px; border-radius: 50vh; background-color: darkred; cursor: pointer;">
+                {% endif %}
+                <span onclick="window.location.href='{% url 'profile' id=user.id %}'">{{ user.username }}</span>
+              </span>
             </div>
             <button class="btn-remove" data-user-id="{{ user.id }}" onclick="removeFriend(this)">Remove Friend</button>
           </div>
@@ -186,7 +194,15 @@
         {% for user in subscribers %}
           <div class="contact-item">
             <div class="contact-info">
-              <span class="contact-name">{{ user.username }}</span>
+              <span class="contact-name">
+              {% load static %}
+              {% if request.user.image %}
+                  <img id="profilePhoto" class="user-image" src="{{ user.image.url }}" alt="" style="height:65px; width:65px; border-radius: 50vh; cursor: pointer;">
+              {% else %}
+                  <img id="profilePhoto" class="user-image" src="{% static 'чел.png' %}" alt="" style="height:300px; width:300px; border-radius: 50vh; background-color: darkred; cursor: pointer;">
+              {% endif %}
+              <span onclick="window.location.href='{% url 'profile' id=user.id %}'">{{ user.username }}</span>
+              </span>
             </div>
             <button class="btn-add" data-user-id="{{ user.id }}" onclick="addFriend(this)">Add Friend</button>
           </div>
@@ -201,7 +217,15 @@
         {% for user in subscriptions %}
           <div class="contact-item">
             <div class="contact-info">
-              <span class="contact-name">{{ user.username }}</span>
+              <span class="contact-name">
+                {% load static %}
+                {% if request.user.image %}
+                    <img id="profilePhoto" class="user-image" src="{{ user.image.url }}" alt="" style="height:65px; width:65px; border-radius: 50vh; cursor: pointer;">
+                {% else %}
+                    <img id="profilePhoto" class="user-image" src="{% static 'чел.png' %}" alt="" style="height:300px; width:300px; border-radius: 50vh; background-color: darkred; cursor: pointer;">
+                {% endif %}
+                <span onclick="window.location.href='{% url 'profile' id=user.id %}'">{{ user.username }}</span>
+              </span>
             </div>
             <button class="btn-unfollow" data-user-id="{{ user.id }}" onclick="unfollowUser(this)">Unfollow</button>
           </div>
@@ -216,7 +240,15 @@
         {% for user in other_users %}
           <div class="contact-item">
             <div class="contact-info">
-              <span class="contact-name">{{ user.username }}</span>
+              <span class="contact-name">
+                {% load static %}
+                {% if request.user.image %}
+                    <img id="profilePhoto" class="user-image" src="{{ user.image.url }}" alt="" style="height:65px; width:65px; border-radius: 50vh; cursor: pointer;">
+                {% else %}
+                    <img id="profilePhoto" class="user-image" src="{% static 'чел.png' %}" alt="" style="height:300px; width:300px; border-radius: 50vh; background-color: darkred; cursor: pointer;">
+                {% endif %}
+                <span onclick="window.location.href='{% url 'profile' id=user.id %}'">{{ user.username }}</span>
+              </span>
             </div>
             <button class="btn-add" data-user-id="{{ user.id }}" onclick="addFriend(this)">Add Friend</button>
           </div>

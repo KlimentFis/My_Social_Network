@@ -48,8 +48,8 @@
     }
 
     .author-info img {
-      width: 50px;
-      height: 50px;
+      width: 65px;
+      height: 65px;
       border-radius: 50%;
       margin-right: 10px;
       object-fit: cover;
@@ -106,25 +106,24 @@
   <a href="{% url 'create_post' %}" class="create-post-link">+</a>
 
   <!-- Новостной элемент 2 -->
-{% for post in posts %}
-  <div class="news-item">
-    <div class="author-info">
-      {% load static %}
-      <img style="border: 2px solid red; backgroun-color: red;" src="{% if post.author.image %}{{post.author.image}}{% else %}{% static 'чел.png' %}{% endif %}" alt="{{ post.author.username }}">
-      <span>{{ post.author.username }}</span>
+  {% for post in posts %}
+    <div class="news-item">
+      <div class="author-info">
+        {% load static %}
+        <img style="border: 2px solid red; background-color: red;" src="{% if post.author.image.url %}{{ post.author.image.url }}{% else %}{% static 'чел.png' %}{% endif %}" alt="{{ post.author.username }}">
+        <span>{{ post.author.username }}</span>
+      </div>
+      <div class="post-images" align="center">
+        {% for image in post.images.all %}
+          <img src="{{ image.image.url }}" alt="Image for {{ post.title }}">
+        {% endfor %}
+      </div>
+      {% if post.title != 'Untitled' %}
+        <h2>{{ post.title }}</h2>
+      {% endif %}
+      {% if post.content != 'Untitled' %}
+        <p>{{ post.content }}</p>
+      {% endif %}
     </div>
-    <div class="post-images" align="center">
-      {% for image in post.images.all %}
-        <img src="{{ image.image.url }}" alt="Image for {{ post.title }}">
-      {% endfor %}
-    </div>
-    {% if post.title != 'Untitled' %}
-      <h2>{{ post.title }}</h2>
-    {% endif %}
-    {% if post.content != 'Untitled' %}
-      <p>{{ post.content }}</p>
-    {% endif %}
-  </div>
-{% endfor %}
-
+  {% endfor %}
 {% endblock %}
